@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This is a TypeScript-based monorepo for Life Cockpit trading services, built using Nx. The project follows a workspace structure where individual packages/libraries are managed under the `packages/` directory.
+This is a TypeScript-based monorepo for Life Cockpit trading services, built using Nx. The project follows a workspace structure where libraries are managed under the `libs/` directory and applications under the `apps/` directory, following Nx best practices.
 
 **Tech Stack:**
 
@@ -15,8 +15,9 @@ This is a TypeScript-based monorepo for Life Cockpit trading services, built usi
 ## Architecture
 
 - Monorepo managed by Nx
-- Packages are located in `packages/*`
-- Each package can be publishable or buildable
+- Libraries are located in `libs/*`
+- Applications are located in `apps/*`
+- Each library can be publishable or buildable
 - Uses TypeScript project references for efficient builds
 - Strict TypeScript configuration enforced
 
@@ -51,22 +52,28 @@ This is a TypeScript-based monorepo for Life Cockpit trading services, built usi
 
 ## Nx Workspace Guidelines
 
-### Creating New Packages
+### Creating New Libraries
 
-Use Nx generators to create new libraries:
+Use Nx generators to create new libraries in the `libs/` directory:
 
 ```bash
-npx nx g @nx/js:lib packages/package-name --publishable --importPath=@lc-trading-services/package-name
+npx nx g @nx/js:lib libs/library-name --publishable --importPath=@lc-trading-services/library-name
+```
+
+For applications, use:
+
+```bash
+npx nx g @nx/node:application apps/app-name
 ```
 
 ### Building
 
-- Build a specific package: `npx nx build <package-name>`
-- Build all packages: `npx nx run-many -t build`
+- Build a specific library or app: `npx nx build <library-name>`
+- Build all projects: `npx nx run-many -t build`
 
 ### Type Checking
 
-- Type check a package: `npx nx typecheck <package-name>`
+- Type check a library or app: `npx nx typecheck <library-name>`
 - Type check all: `npx nx run-many -t typecheck`
 
 ### Testing
@@ -78,7 +85,7 @@ npx nx g @nx/js:lib packages/package-name --publishable --importPath=@lc-trading
 ## Dependency Management
 
 - Add dependencies to the root `package.json` for shared tooling
-- Add package-specific dependencies to individual package's `package.json`
+- Add library-specific dependencies to individual library's `package.json`
 - Use exact versions or tilde (~) for patch updates
 - Document why external dependencies are needed
 
@@ -104,9 +111,11 @@ Example: `feat(trading-api): add order execution endpoint`
 
 ## Best Practices
 
-- Keep packages focused and with single responsibility
-- Avoid circular dependencies between packages
-- Use barrel exports (index.ts) for public package APIs
+- Keep libraries focused and with single responsibility
+- Avoid circular dependencies between libraries
+- Use barrel exports (index.ts) for public library APIs
+- Organize libraries by domain or feature (e.g., `libs/domain/user`, `libs/features/auth`)
+- Keep applications in `apps/` directory separate from shared libraries
 - Keep configuration files minimal and inherit from base configs
 - Document architectural decisions in the README or docs
 - Use Nx's dependency graph to visualize and manage dependencies: `npx nx graph`
@@ -121,7 +130,7 @@ Example: `feat(trading-api): add order execution endpoint`
 
 ## Documentation
 
-- Update README.md when adding new features or packages
+- Update README.md when adding new features, libraries, or applications
 - Document public APIs with JSDoc comments
 - Include usage examples for complex functionality
 - Keep architecture diagrams up to date
