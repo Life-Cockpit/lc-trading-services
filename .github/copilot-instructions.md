@@ -5,6 +5,7 @@
 This is a TypeScript-based monorepo for Life Cockpit trading services, built using Nx. The project follows a workspace structure where individual packages/libraries are managed under the `packages/` directory.
 
 **Tech Stack:**
+
 - **Build Tool:** Nx 22.0.1
 - **Language:** TypeScript 5.9.2
 - **Module System:** NodeNext (ESM)
@@ -53,6 +54,7 @@ This is a TypeScript-based monorepo for Life Cockpit trading services, built usi
 ### Creating New Packages
 
 Use Nx generators to create new libraries:
+
 ```bash
 npx nx g @nx/js:lib packages/package-name --publishable --importPath=@lc-trading-services/package-name
 ```
@@ -90,6 +92,7 @@ npx nx g @nx/js:lib packages/package-name --publishable --importPath=@lc-trading
 ### Commit Messages
 
 Follow conventional commit format:
+
 - `feat(scope): description` - New features
 - `fix(scope): description` - Bug fixes
 - `docs(scope): description` - Documentation changes
