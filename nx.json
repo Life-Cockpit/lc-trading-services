@@ -24,6 +24,12 @@
           "watchDepsName": "watch-deps"
         }
       }
+    },
+    {
+      "plugin": "@nx/jest",
+      "options": {
+        "targetName": "test"
+      }
     }
   ],
   "release": {
