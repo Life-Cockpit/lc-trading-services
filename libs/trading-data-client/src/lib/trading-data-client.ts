@@ -8,9 +8,10 @@ import type {
 } from '@lc-trading-services/lc-trading-data-interface';
 
 /**
- * Yahoo Finance implementation of the trading data provider
+ * Trading data client implementing the ITradingDataProvider interface
+ * Uses Yahoo Finance as the data source
  */
-export class YahooFinanceClient implements ITradingDataProvider {
+export class TradingDataClient implements ITradingDataProvider {
   private yahooFinance: InstanceType<typeof YahooFinance>;
 
   constructor() {

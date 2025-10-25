@@ -1,4 +1,4 @@
-import { YahooFinanceClient } from './trading-data-client';
+import { TradingDataClient } from './trading-data-client';
 import type {
   OHLCVData,
   QuoteData,
@@ -18,20 +18,20 @@ jest.mock('yahoo-finance2', () => {
   };
 });
 
-describe('YahooFinanceClient', () => {
-  let client: YahooFinanceClient;
+describe('TradingDataClient', () => {
+  let client: TradingDataClient;
 
   beforeEach(() => {
     // Clear all mocks before each test
     jest.clearAllMocks();
 
     // Create a new client instance
-    client = new YahooFinanceClient();
+    client = new TradingDataClient();
   });
 
   describe('constructor', () => {
     it('should create an instance', () => {
-      expect(client).toBeInstanceOf(YahooFinanceClient);
+      expect(client).toBeInstanceOf(TradingDataClient);
     });
 
     it('should initialize yahooFinance instance', () => {

@@ -1,15 +1,15 @@
 /**
  * Example: Fetching Forex data using the trading-data-client
  * 
- * This example demonstrates how to use the YahooFinanceClient to fetch
+ * This example demonstrates how to use the TradingDataClient to fetch
  * current quotes and historical data for Forex pairs.
  */
 
-import { YahooFinanceClient } from '@lc-trading-services/trading-data-client';
+import { TradingDataClient } from '@lc-trading-services/trading-data-client';
 
 async function main() {
   // Create a new client instance
-  const client = new YahooFinanceClient();
+  const client = new TradingDataClient();
 
   console.log('=== Forex Quote Example ===\n');
 

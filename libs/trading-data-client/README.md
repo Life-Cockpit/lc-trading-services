@@ -26,10 +26,10 @@ This package depends on:
 ### Basic Example
 
 ```typescript
-import { YahooFinanceClient } from '@lc-trading-services/trading-data-client';
+import { TradingDataClient } from '@lc-trading-services/trading-data-client';
 
 // Create a client instance
-const client = new YahooFinanceClient();
+const client = new TradingDataClient();
 
 // Get current quote for EUR/USD
 const quote = await client.getQuote('EURUSD=X');
@@ -52,9 +52,9 @@ historicalData.forEach(point => {
 ### Forex Example
 
 ```typescript
-import { YahooFinanceClient } from '@lc-trading-services/trading-data-client';
+import { TradingDataClient } from '@lc-trading-services/trading-data-client';
 
-const client = new YahooFinanceClient();
+const client = new TradingDataClient();
 
 // Common Forex pairs use the format: XXXYYY=X
 const forexPairs = ['EURUSD=X', 'GBPUSD=X', 'USDJPY=X'];
@@ -68,9 +68,9 @@ for (const pair of forexPairs) {
 ### Stock Example
 
 ```typescript
-import { YahooFinanceClient } from '@lc-trading-services/trading-data-client';
+import { TradingDataClient } from '@lc-trading-services/trading-data-client';
 
-const client = new YahooFinanceClient();
+const client = new TradingDataClient();
 
 // Get Apple stock quote
 const appleQuote = await client.getQuote('AAPL');
@@ -83,9 +83,9 @@ console.log(`Volume: ${appleQuote.volume}`);
 ### Intraday Data Example
 
 ```typescript
-import { YahooFinanceClient } from '@lc-trading-services/trading-data-client';
+import { TradingDataClient } from '@lc-trading-services/trading-data-client';
 
-const client = new YahooFinanceClient();
+const client = new TradingDataClient();
 
 // Get 5-minute interval data for the last 7 days
 const intradayData = await client.getHistoricalData({
@@ -99,7 +99,7 @@ console.log(`Retrieved ${intradayData.length} 5-minute candles`);
 
 ## API Reference
 
-### `YahooFinanceClient`
+### `TradingDataClient`
 
 Implements the `ITradingDataProvider` interface from `@lc-trading-services/lc-trading-data-interface`.
 
@@ -151,9 +151,9 @@ Use the ticker symbol directly:
 The client throws errors with descriptive messages when operations fail:
 
 ```typescript
-import { YahooFinanceClient } from '@lc-trading-services/trading-data-client';
+import { TradingDataClient } from '@lc-trading-services/trading-data-client';
 
-const client = new YahooFinanceClient();
+const client = new TradingDataClient();
 
 try {
   const quote = await client.getQuote('INVALID_SYMBOL');
