@@ -22,7 +22,6 @@ This is an Nx monorepo with the following structure:
 ```
 lc-trading-services/
 ├── libs/                    # Shared libraries
-│   ├── lc-trading-data-interface/    # Core data interfaces
 │   └── trading-data-client/          # Yahoo Finance implementation
 ├── examples/                # Usage examples
 ├── package.json            # Root package configuration
@@ -32,39 +31,30 @@ lc-trading-services/
 
 ### Libraries
 
-The project currently does not have an `/apps` directory - all functionality is provided through reusable libraries in the `/libs` directory. Each library is a standalone, publishable npm package that can be consumed by external applications.
+The project currently does not have an `/apps` directory - all functionality is provided through reusable libraries in the `/libs` directory. The library is a standalone, publishable npm package that can be consumed by external applications.
 
-#### Available Libraries
-
-The repository contains the following libraries:
-
-#### `lc-trading-data-interface`
-
-**Package:** `@lc-trading-services/lc-trading-data-interface`
-
-This library provides TypeScript interfaces and types that define the contract for trading data providers. It serves as the foundation for all trading data implementations in the project.
-
-**Key Exports:**
-- `ITradingDataProvider` - Main interface for data providers
-- `OHLCVData` - Open, High, Low, Close, Volume data structure
-- `QuoteData` - Real-time quote information
-- `HistoricalDataParams` - Parameters for historical data requests
-- `TimeInterval` - Supported time intervals (1m, 5m, 15m, 1h, 1d, 1wk, 1mo)
-
-**Purpose:** Decouples data consumers from specific provider implementations, enabling easy swapping of data sources without code changes.
+#### Available Library
 
 #### `trading-data-client`
 
 **Package:** `@lc-trading-services/trading-data-client`
 
-A concrete implementation of the `ITradingDataProvider` interface using Yahoo Finance as the data source. This client provides production-ready access to financial market data.
+A Yahoo Finance-based trading data provider that provides production-ready access to financial market data. This library includes all necessary TypeScript interfaces and types.
+
+**Key Exports:**
+- `TradingDataClient` - Main client class for accessing trading data
+- `ITradingDataProvider` - Interface for data providers
+- `OHLCVData` - Open, High, Low, Close, Volume data structure
+- `QuoteData` - Real-time quote information
+- `HistoricalDataParams` - Parameters for historical data requests
+- `TimeInterval` - Supported time intervals (1m, 5m, 15m, 1h, 1d, 1wk, 1mo)
 
 **Features:**
 - Real-time quotes for stocks, Forex, and cryptocurrencies
 - Historical OHLCV data with configurable time intervals
 - Support for intraday and daily data
 - Robust error handling
-- Type-safe API based on the interface definitions
+- Type-safe API with all types included
 
 **Supported Assets:**
 - Forex pairs (e.g., `EURUSD`, `EUR/USD`)
@@ -382,8 +372,7 @@ npx ts-node --esm examples/forex-example.ts
 ### Building Specific Libraries
 
 ```bash
-# Build a single library
-npx nx build lc-trading-data-interface
+# Build the library
 npx nx build trading-data-client
 
 # Build all
@@ -393,8 +382,7 @@ npx nx run-many -t build
 ### Testing
 
 ```bash
-# Test a single library
-npx nx test lc-trading-data-interface
+# Test the library
 npx nx test trading-data-client
 
 # Test all
@@ -404,8 +392,8 @@ npx nx run-many -t test
 ### Type Checking
 
 ```bash
-# Type check a single library
-npx nx typecheck lc-trading-data-interface
+# Type check the library
+npx nx typecheck trading-data-client
 
 # Type check all
 npx nx run-many -t typecheck
@@ -435,7 +423,7 @@ npx nx sync:check
 
 ## Publishing to NPM
 
-The `trading-data-client` and `lc-trading-data-interface` libraries are automatically published to NPM when changes are merged to the `main` branch.
+The `trading-data-client` library is automatically published to NPM when a version tag is pushed.
 
 ### For Library Consumers
 
