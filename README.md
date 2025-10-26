@@ -109,12 +109,21 @@ A concrete implementation of the `ITradingDataProvider` interface using Yahoo Fi
 
 ### Using the Libraries in Your Project
 
-Install the published packages (once published to npm):
+The libraries are published to the [NPM registry](https://www.npmjs.com/) and can be installed using npm:
 
 ```bash
-npm install @lc-trading-services/lc-trading-data-interface
+# Install both libraries
 npm install @lc-trading-services/trading-data-client
+
+# Or install just the interface (if implementing your own provider)
+npm install @lc-trading-services/lc-trading-data-interface
 ```
+
+The `trading-data-client` package automatically installs `lc-trading-data-interface` as a dependency.
+
+**NPM Package Links:**
+- [@lc-trading-services/trading-data-client](https://www.npmjs.com/package/@lc-trading-services/trading-data-client)
+- [@lc-trading-services/lc-trading-data-interface](https://www.npmjs.com/package/@lc-trading-services/lc-trading-data-interface)
 
 Or use them locally during development:
 
@@ -218,6 +227,37 @@ To verify sync status (useful in CI):
 ```bash
 npx nx sync:check
 ```
+
+## Publishing to NPM
+
+The `trading-data-client` and `lc-trading-data-interface` libraries are automatically published to NPM when changes are merged to the `main` branch.
+
+### For Library Consumers
+
+Install the packages from NPM:
+
+```bash
+npm install @lc-trading-services/trading-data-client
+```
+
+See the [NPM packages](https://www.npmjs.com/org/lc-trading-services) for the latest versions.
+
+### For Maintainers
+
+To publish a new version:
+
+1. Update the version in the library's `package.json` following [semantic versioning](https://semver.org/)
+2. Create a PR with your changes
+3. After merging to `main`, GitHub Actions will automatically:
+   - Run tests and builds
+   - Publish to NPM if version changed
+   - Create Git tags and GitHub releases
+
+For detailed publishing instructions, see [PUBLISHING.md](PUBLISHING.md).
+
+**Required Setup:**
+- NPM token must be configured as `NPM_TOKEN` in GitHub secrets
+- Token must have publish permissions for `@lc-trading-services` scope
 
 ## Contributing
 

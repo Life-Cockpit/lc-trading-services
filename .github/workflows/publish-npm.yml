@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       interface-published: ${{ steps.version-check.outputs.needs_publish }}
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -57,11 +57,11 @@ jobs:
           # Get the current version from package.json
           CURRENT_VERSION=$(node -p "require('./libs/lc-trading-data-interface/package.json').version")
           echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-          
+
           # Check if this version exists on NPM
           NPM_VERSION=$(npm view @lc-trading-services/lc-trading-data-interface version 2>/dev/null || echo "0.0.0")
           echo "npm_version=$NPM_VERSION" >> $GITHUB_OUTPUT
-          
+
           if [ "$CURRENT_VERSION" != "$NPM_VERSION" ]; then
             echo "needs_publish=true" >> $GITHUB_OUTPUT
             echo "Version changed from $NPM_VERSION to $CURRENT_VERSION - will publish"
@@ -97,7 +97,7 @@ jobs:
     name: Publish trading-data-client to NPM
     runs-on: ubuntu-latest
     needs: publish-interface
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -132,11 +132,11 @@ jobs:
           # Get the current version from package.json
           CURRENT_VERSION=$(node -p "require('./libs/trading-data-client/package.json').version")
           echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-          
+
           # Check if this version exists on NPM
           NPM_VERSION=$(npm view @lc-trading-services/trading-data-client version 2>/dev/null || echo "0.0.0")
           echo "npm_version=$NPM_VERSION" >> $GITHUB_OUTPUT
-          
+
           if [ "$CURRENT_VERSION" != "$NPM_VERSION" ]; then
             echo "needs_publish=true" >> $GITHUB_OUTPUT
             echo "Version changed from $NPM_VERSION to $CURRENT_VERSION - will publish"
@@ -167,7 +167,7 @@ jobs:
           script: |
             const version = '${{ steps.version-check.outputs.current_version }}';
             const tagName = `trading-data-client-v${version}`;
-            
+
             try {
               await github.rest.repos.createRelease({
                 owner: context.repo.owner,
