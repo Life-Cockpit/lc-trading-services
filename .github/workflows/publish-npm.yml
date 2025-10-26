@@ -84,7 +84,7 @@ jobs:
                 repo: context.repo.repo,
                 tag_name: tagName,
                 name: `trading-data-client v${version}`,
-                body: `## trading-data-client v${version}\n\nPublished to NPM: https://www.npmjs.com/package/@lc-trading-services/trading-data-client/v/${version}\n\n### Installation\n\`\`\`bash\nnpm install @lc-trading-services/trading-data-client@${version}\n\`\`\`\n\n### What's Changed\n\nSee the [commit history](https://github.com/${context.repo.owner}/${context.repo.repo}/commits/${tagName}) for details.`,
+                body: `## trading-data-client v${version}\n\nPublished to NPM: https://www.npmjs.com/package/@life-cockpit-services/trading-data-client/v/${version}\n\n### Installation\n\`\`\`bash\nnpm install @life-cockpit-services/trading-data-client@${version}\n\`\`\`\n\n### What's Changed\n\nSee the [commit history](https://github.com/${context.repo.owner}/${context.repo.repo}/commits/${tagName}) for details.`,
                 draft: false,
                 prerelease: version.includes('-') || version.includes('alpha') || version.includes('beta')
               });
@@ -98,11 +98,11 @@ jobs:
           VERSION=${{ steps.tag-version.outputs.version }}
           echo "## ✅ Successfully published trading-data-client v${VERSION}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "📦 Package: [@lc-trading-services/trading-data-client](https://www.npmjs.com/package/@lc-trading-services/trading-data-client)" >> $GITHUB_STEP_SUMMARY
+          echo "📦 Package: [@life-cockpit-services/trading-data-client](https://www.npmjs.com/package/@life-cockpit-services/trading-data-client)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "🏷️ Tag: \`${{ steps.tag-version.outputs.tag_name }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Installation" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "npm install @lc-trading-services/trading-data-client@${VERSION}" >> $GITHUB_STEP_SUMMARY
+          echo "npm install @life-cockpit-services/trading-data-client@${VERSION}" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
