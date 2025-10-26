@@ -1,6 +1,9 @@
 {
   "name": "@lc-trading-services/trading-data-client",
   "version": "0.0.1",
+  "description": "Yahoo Finance-based trading data provider implementation for fetching asset data including Forex, stocks, and other financial instruments",
+  "author": "Life Cockpit",
+  "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -16,11 +19,35 @@
   },
   "files": [
     "dist",
+    "README.md",
+    "LICENSE",
     "!**/*.tsbuildinfo"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Life-Cockpit/lc-trading-services.git",
+    "directory": "libs/trading-data-client"
+  },
+  "bugs": {
+    "url": "https://github.com/Life-Cockpit/lc-trading-services/issues"
+  },
+  "homepage": "https://github.com/Life-Cockpit/lc-trading-services#readme",
+  "keywords": [
+    "trading",
+    "finance",
+    "yahoo-finance",
+    "forex",
+    "stocks",
+    "market-data",
+    "ohlcv",
+    "typescript",
+    "data-provider"
   ],
   "dependencies": {
     "tslib": "^2.3.0",
-    "yahoo-finance2": "^3.10.0",
-    "@lc-trading-services/lc-trading-data-interface": "*"
+    "yahoo-finance2": "^3.10.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
