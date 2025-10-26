@@ -40,11 +40,9 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Publishing package: $PACKAGE_NAME version: $VERSION"
           
-          # Determine package directory (libs or apps)
+          # Determine package directory (libs only)
           if [ -d "libs/$PACKAGE_NAME" ]; then
             PACKAGE_DIR="libs/$PACKAGE_NAME"
-          elif [ -d "apps/$PACKAGE_NAME" ]; then
-            PACKAGE_DIR="apps/$PACKAGE_NAME"
           else
             echo "Package directory not found for: $PACKAGE_NAME"
             exit 1

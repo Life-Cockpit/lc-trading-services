@@ -12,7 +12,7 @@ Or use it locally during development:
 
 ```bash
 # In your project
-npm install /path/to/lc-trading-services/apps/trading-indicators
+npm install /path/to/lc-trading-services/libs/trading-indicators
 ```
 
 This package depends on:
