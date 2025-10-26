@@ -8,8 +8,24 @@ A Yahoo Finance-based implementation of the trading data provider interface for 
 npm install @lc-trading-services/trading-data-client
 ```
 
+Or use it locally during development:
+
+```bash
+# In your project
+npm install /path/to/lc-trading-services/libs/trading-data-client
+```
+
 This package depends on:
 - `yahoo-finance2` - Yahoo Finance API client
+
+## Key Exports
+
+- `TradingDataClient` - Main client class for accessing trading data
+- `ITradingDataProvider` - Interface for data providers
+- `OHLCVData` - Open, High, Low, Close, Volume data structure
+- `QuoteData` - Real-time quote information
+- `HistoricalDataParams` - Parameters for historical data requests
+- `TimeInterval` - Supported time intervals (1m, 2m, 5m, 15m, 30m, 1h, 1d, 1wk, 1mo)
 
 ## Features
 
@@ -20,6 +36,39 @@ This package depends on:
 - ✅ Support for stocks, ETFs, and other instruments
 - ✅ Type-safe implementation using TypeScript
 - ✅ Automatic symbol normalization to Yahoo Finance format
+- ✅ Robust error handling
+
+## Supported Assets
+
+- **Forex pairs**: `EURUSD`, `EUR/USD`, `GBPUSD`, `GBP/USD`, etc.
+- **Stocks**: `AAPL`, `MSFT`, `GOOGL`, etc.
+- **ETFs and indices**
+- **Cryptocurrencies**: `BTC-USD`, `ETH-USD`, etc.
+
+## Quick Start Guide
+
+```typescript
+import { TradingDataClient } from '@lc-trading-services/trading-data-client';
+
+// Create client
+const client = new TradingDataClient();
+
+// Get real-time quote
+const quote = await client.getQuote('EUR/USD');
+console.log('Price:', quote.price);
+
+// Get historical data
+const data = await client.getHistoricalData({
+  symbol: 'AAPL',
+  startDate: new Date('2024-01-01'),
+  endDate: new Date('2024-01-31'),
+  interval: '1d'
+});
+```
+
+**Supported Intervals:** `1m`, `2m`, `5m`, `15m`, `30m`, `1h`, `1d`, `1wk`, `1mo`
+
+For more detailed examples, see the examples directory in the repository root.
 
 ## Usage
 
