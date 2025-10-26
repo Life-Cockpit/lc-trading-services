@@ -25,7 +25,7 @@ This package depends on:
 - `OHLCVData` - Open, High, Low, Close, Volume data structure
 - `QuoteData` - Real-time quote information
 - `HistoricalDataParams` - Parameters for historical data requests
-- `TimeInterval` - Supported time intervals (1m, 5m, 15m, 1h, 1d, 1wk, 1mo)
+- `TimeInterval` - Supported time intervals (1m, 2m, 5m, 15m, 30m, 1h, 1d, 1wk, 1mo)
 
 ## Features
 
@@ -68,7 +68,7 @@ const data = await client.getHistoricalData({
 
 **Supported Intervals:** `1m`, `2m`, `5m`, `15m`, `30m`, `1h`, `1d`, `1wk`, `1mo`
 
-For more detailed examples, see the [examples directory](../../examples/) in the repository root.
+For more detailed examples, see the examples directory in the repository root.
 
 ## Usage
 
