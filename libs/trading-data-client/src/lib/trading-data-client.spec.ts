@@ -195,6 +195,48 @@ describe('TradingDataClient', () => {
         );
       }
     });
+
+    it('should normalize simple forex format (EURUSD) for historical data', async () => {
+      mockChartFn.mockResolvedValue({ quotes: [] });
+
+      await client.getHistoricalData({
+        symbol: 'EURUSD',
+        startDate: new Date('2024-01-01'),
+      });
+
+      expect(mockChartFn).toHaveBeenCalledWith(
+        'EURUSD=X',
+        expect.any(Object)
+      );
+    });
+
+    it('should normalize forex format with slash (EUR/USD) for historical data', async () => {
+      mockChartFn.mockResolvedValue({ quotes: [] });
+
+      await client.getHistoricalData({
+        symbol: 'EUR/USD',
+        startDate: new Date('2024-01-01'),
+      });
+
+      expect(mockChartFn).toHaveBeenCalledWith(
+        'EURUSD=X',
+        expect.any(Object)
+      );
+    });
+
+    it('should not modify stock symbols for historical data', async () => {
+      mockChartFn.mockResolvedValue({ quotes: [] });
+
+      await client.getHistoricalData({
+        symbol: 'AAPL',
+        startDate: new Date('2024-01-01'),
+      });
+
+      expect(mockChartFn).toHaveBeenCalledWith(
+        'AAPL',
+        expect.any(Object)
+      );
+    });
   });
 
   describe('getQuote', () => {
@@ -306,6 +348,51 @@ describe('TradingDataClient', () => {
         expect(result.symbol).toBe(symbol);
         expect(mockQuoteFn).toHaveBeenCalledWith(symbol);
       }
+    });
+
+    it('should normalize simple forex format (EURUSD) to Yahoo Finance format', async () => {
+      const mockQuote = {
+        symbol: 'EURUSD=X',
+        regularMarketPrice: 1.0850,
+        regularMarketTime: new Date(),
+      };
+
+      mockQuoteFn.mockResolvedValue(mockQuote);
+
+      const result = await client.getQuote('EURUSD');
+
+      expect(result.symbol).toBe('EURUSD=X');
+      expect(mockQuoteFn).toHaveBeenCalledWith('EURUSD=X');
+    });
+
+    it('should normalize forex format with slash (EUR/USD) to Yahoo Finance format', async () => {
+      const mockQuote = {
+        symbol: 'EURUSD=X',
+        regularMarketPrice: 1.0850,
+        regularMarketTime: new Date(),
+      };
+
+      mockQuoteFn.mockResolvedValue(mockQuote);
+
+      const result = await client.getQuote('EUR/USD');
+
+      expect(result.symbol).toBe('EURUSD=X');
+      expect(mockQuoteFn).toHaveBeenCalledWith('EURUSD=X');
+    });
+
+    it('should not modify stock symbols', async () => {
+      const mockQuote = {
+        symbol: 'AAPL',
+        regularMarketPrice: 150.0,
+        regularMarketTime: new Date(),
+      };
+
+      mockQuoteFn.mockResolvedValue(mockQuote);
+
+      const result = await client.getQuote('AAPL');
+
+      expect(result.symbol).toBe('AAPL');
+      expect(mockQuoteFn).toHaveBeenCalledWith('AAPL');
     });
   });
 
