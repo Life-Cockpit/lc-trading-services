@@ -4,6 +4,8 @@
 
 This repository implements branch protection rules to ensure code quality and maintain a clean git history. The `main` branch is protected and requires all changes to go through a pull request process.
 
+> **Note**: For instructions on how to activate these protections, see [ACTIVATION_GUIDE.md](ACTIVATION_GUIDE.md).
+
 ## Protected Branch: `main`
 
 The `main` branch is protected with the following rules:
