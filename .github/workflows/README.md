@@ -38,23 +38,23 @@ This directory contains CI/CD pipelines for the lc-trading-services project.
    - Runs `npm audit` to check for vulnerabilities
    - Reports security issues
 
-### Branch Protection - Main (`branch-protection.yml`)
+### Validate PR Source Branch (`validate-pr-source.yml`)
 
 **Triggers:**
 - Pull requests targeting the `main` branch
 
 **Jobs:**
-1. **Validate Source Branch** - Enforces branch protection policy
-   - Ensures PRs to `main` only come from `develop` branch
-   - Comments on the PR with validation results
-   - Fails the check if PR is from any branch other than `develop`
+1. **validate-source-branch** - Enforces branch protection policy
+   - Validates that PRs to `main` only come from `develop` branch
+   - Fails the check if PR source is not `develop`
+   - Required status check for the main branch ruleset
 
 **Purpose:**
-This workflow enforces a strict branching strategy where the `main` branch
-can only receive pull requests from the `develop` branch. This ensures:
-- Controlled releases through the develop branch
-- Prevention of direct feature branch merges to main
-- Consistent deployment workflow
+This workflow works in conjunction with the GitHub branch protection ruleset
+to ensure only PRs from `develop` can be merged to `main`. This enforces a
+Git Flow branching strategy where feature branches merge to develop first.
+
+See `.github/BRANCH_PROTECTION.md` for complete setup instructions.
 
 ## Running Tests Locally
 
