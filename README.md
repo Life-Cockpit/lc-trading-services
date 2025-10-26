@@ -124,6 +124,33 @@ npm install /path/to/lc-trading-services/libs/lc-trading-data-interface
 npm install /path/to/lc-trading-services/libs/trading-data-client
 ```
 
+### Quick Usage Example
+
+Here's a simple example of using the TradingDataClient:
+
+```typescript
+import { TradingDataClient } from '@lc-trading-services/trading-data-client';
+
+// Create a client instance
+const client = new TradingDataClient();
+
+// Get current quote for EUR/USD
+const quote = await client.getQuote('EURUSD=X');
+console.log(`EUR/USD: ${quote.price}`);
+
+// Get historical data
+const historicalData = await client.getHistoricalData({
+  symbol: 'AAPL',
+  startDate: new Date('2024-01-01'),
+  endDate: new Date('2024-01-31'),
+  interval: '1d'
+});
+
+console.log(`Retrieved ${historicalData.length} data points`);
+```
+
+For more detailed examples, see the [trading-data-client README](libs/trading-data-client/README.md) or check the [examples directory](examples/).
+
 ### Running Examples
 
 The `examples/` directory contains sample code demonstrating library usage:
