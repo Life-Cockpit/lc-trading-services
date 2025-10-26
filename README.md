@@ -134,253 +134,30 @@ npm install /path/to/lc-trading-services/libs/trading-data-client
 
 ### Quick Start Guide
 
-#### Basic Usage
-
-##### 1. Import and Create Client
-
 ```typescript
 import { TradingDataClient } from '@lc-trading-services/trading-data-client';
 
+// Create client
 const client = new TradingDataClient();
+
+// Get real-time quote
+const quote = await client.getQuote('EUR/USD');
+console.log('Price:', quote.price);
+
+// Get historical data
+const data = await client.getHistoricalData({
+  symbol: 'AAPL',
+  startDate: new Date('2024-01-01'),
+  endDate: new Date('2024-01-31'),
+  interval: '1d'
+});
 ```
 
-##### 2. Get Real-Time Quote
+**Supported Intervals:** `1m`, `2m`, `5m`, `15m`, `30m`, `1h`, `1d`, `1wk`, `1mo`
 
-```typescript
-async function getCurrentPrice() {
-  try {
-    // Get EUR/USD quote
-    const quote = await client.getQuote('EUR/USD');
+**Supported Assets:** Forex pairs (EUR/USD, EURUSD), Stocks (AAPL, MSFT), ETFs, Cryptocurrencies (BTC-USD)
 
-    console.log('Current Price:', quote.price);
-    console.log('Day High:', quote.dayHigh);
-    console.log('Day Low:', quote.dayLow);
-    console.log('Volume:', quote.volume);
-  } catch (error) {
-    console.error('Error fetching quote:', error.message);
-  }
-}
-
-getCurrentPrice();
-```
-
-##### 3. Get Historical Data
-
-```typescript
-async function getHistoricalPrices() {
-  try {
-    const data = await client.getHistoricalData({
-      symbol: 'AAPL',
-      startDate: new Date('2024-01-01'),
-      endDate: new Date('2024-01-31'),
-      interval: '1d'
-    });
-
-    console.log(`Retrieved ${data.length} data points`);
-
-    // Print first 5 data points
-    data.slice(0, 5).forEach(point => {
-      console.log(
-        `${point.date.toISOString().split('T')[0]}: ` +
-        `Open=${point.open}, Close=${point.close}, ` +
-        `High=${point.high}, Low=${point.low}, Volume=${point.volume}`
-      );
-    });
-  } catch (error) {
-    console.error('Error fetching historical data:', error.message);
-  }
-}
-
-getHistoricalPrices();
-```
-
-#### Common Use Cases
-
-##### Forex Trading
-
-```typescript
-async function forexExample() {
-  const client = new TradingDataClient();
-
-  // All these formats work
-  const formats = ['EUR/USD', 'EURUSD', 'EURUSD=X'];
-
-  for (const symbol of formats) {
-    const quote = await client.getQuote(symbol);
-    console.log(`${symbol}: ${quote.price}`);
-  }
-}
-```
-
-##### Stock Analysis
-
-```typescript
-async function stockAnalysis() {
-  const client = new TradingDataClient();
-  const symbol = 'AAPL';
-
-  // Get 30 days of daily data
-  const endDate = new Date();
-  const startDate = new Date();
-  startDate.setDate(endDate.getDate() - 30);
-
-  const data = await client.getHistoricalData({
-    symbol,
-    startDate,
-    endDate,
-    interval: '1d'
-  });
-
-  // Calculate average closing price
-  const avgClose = data.reduce((sum, d) => sum + d.close, 0) / data.length;
-  console.log(`Average closing price: $${avgClose.toFixed(2)}`);
-
-  // Find highest and lowest
-  const highest = Math.max(...data.map(d => d.high));
-  const lowest = Math.min(...data.map(d => d.low));
-  console.log(`30-day range: $${lowest.toFixed(2)} - $${highest.toFixed(2)}`);
-}
-```
-
-##### Intraday Trading
-
-```typescript
-async function intradayExample() {
-  const client = new TradingDataClient();
-
-  // Get 5-minute candles for the last 5 days
-  const endDate = new Date();
-  const startDate = new Date();
-  startDate.setDate(endDate.getDate() - 5);
-
-  const data = await client.getHistoricalData({
-    symbol: 'SPY', // S&P 500 ETF
-    startDate,
-    endDate,
-    interval: '5m'
-  });
-
-  console.log(`Retrieved ${data.length} 5-minute candles`);
-}
-```
-
-#### TypeScript Types
-
-The library is fully typed. You can import types for better IDE support:
-
-```typescript
-import {
-  TradingDataClient,
-  type ITradingDataProvider,
-  type OHLCVData,
-  type QuoteData,
-  type HistoricalDataParams,
-  type TimeInterval
-} from '@lc-trading-services/trading-data-client';
-
-// Use the interface to allow for different implementations
-function processData(provider: ITradingDataProvider) {
-  return provider.getQuote('AAPL');
-}
-
-const client = new TradingDataClient();
-const quote = await processData(client);
-```
-
-#### Supported Intervals
-
-- `'1m'` - 1 minute
-- `'2m'` - 2 minutes
-- `'5m'` - 5 minutes
-- `'15m'` - 15 minutes
-- `'30m'` - 30 minutes
-- `'1h'` - 1 hour
-- `'1d'` - 1 day (default)
-- `'1wk'` - 1 week
-- `'1mo'` - 1 month
-
-#### Error Handling
-
-Always wrap API calls in try-catch blocks:
-
-```typescript
-async function safeQuote(symbol: string) {
-  const client = new TradingDataClient();
-
-  try {
-    return await client.getQuote(symbol);
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error(`Failed to get quote for ${symbol}:`, error.message);
-    }
-    // Return a default or throw
-    throw error;
-  }
-}
-```
-
-#### Complete Example
-
-Here's a complete working example:
-
-```typescript
-import { TradingDataClient } from '@lc-trading-services/trading-data-client';
-
-async function main() {
-  const client = new TradingDataClient();
-
-  // 1. Get current prices for multiple symbols
-  const symbols = ['AAPL', 'MSFT', 'EUR/USD', 'BTC-USD'];
-
-  console.log('Current Prices:');
-  for (const symbol of symbols) {
-    try {
-      const quote = await client.getQuote(symbol);
-      console.log(`${symbol}: ${quote.price}`);
-    } catch (error) {
-      console.error(`Error fetching ${symbol}:`, error.message);
-    }
-  }
-
-  // 2. Get historical data for Apple stock
-  console.log('\nApple Stock - Last 7 Days:');
-  const endDate = new Date();
-  const startDate = new Date();
-  startDate.setDate(endDate.getDate() - 7);
-
-  try {
-    const historicalData = await client.getHistoricalData({
-      symbol: 'AAPL',
-      startDate,
-      endDate,
-      interval: '1d'
-    });
-
-    historicalData.forEach(point => {
-      const date = point.date.toISOString().split('T')[0];
-      console.log(`${date}: Close=$${point.close.toFixed(2)}`);
-    });
-  } catch (error) {
-    console.error('Error fetching historical data:', error.message);
-  }
-}
-
-main().catch(console.error);
-```
-
-For more detailed examples, see the [trading-data-client README](libs/trading-data-client/README.md) or check the [examples directory](examples/).
-
-### Running Examples
-
-The `examples/` directory contains sample code demonstrating library usage:
-
-```bash
-# Build the libraries first
-npx nx run-many -t build
-
-# Run an example
-npx ts-node --esm examples/forex-example.ts
-```
+For detailed examples including Forex trading, stock analysis, intraday trading, TypeScript types, and error handling, see the [trading-data-client README](libs/trading-data-client/README.md) or check the [examples directory](examples/).
 
 ## Development Workflow
 
@@ -438,41 +215,23 @@ npx nx sync:check
 
 ## Publishing to NPM
 
-This monorepo uses **independent versioning** - each library and application can be versioned and published separately.
+This monorepo uses **independent versioning** - each package can be versioned and published separately.
 
-### For Library Consumers
-
-Install the package from NPM:
-
+**Installation:**
 ```bash
 npm install @lc-trading-services/trading-data-client
 ```
 
-See the [NPM package](https://www.npmjs.com/package/@lc-trading-services/trading-data-client) for the latest version.
+**Publishing (for maintainers):**
+```bash
+# Tag format: <package-name>-v<version>
+git tag trading-data-client-v0.2.0
+git push origin trading-data-client-v0.2.0
+```
 
-### For Maintainers
+GitHub Actions automatically tests, builds, and publishes to NPM. Each package maintains its own version (e.g., trading-data-client v2.1.0, other-lib v0.1.0).
 
-To publish a package, create and push a tag following the format `<package-name>-v<version>`:
-
-1. Ensure all changes are merged to the `main` branch
-2. Create and push a Git tag for the specific package:
-   ```bash
-   # Example: Publish trading-data-client version 0.2.0
-   git tag trading-data-client-v0.2.0
-   git push origin trading-data-client-v0.2.0
-   ```
-3. GitHub Actions will automatically:
-   - Run tests and build for that specific package
-   - Publish to NPM
-   - Create a GitHub release
-
-**Each package has its own version** - you can publish packages independently without affecting others. For example, trading-data-client can be at v2.1.0 while a new utility library remains at v0.1.0.
-
-For detailed publishing instructions, see [PUBLISHING.md](PUBLISHING.md).
-
-**Required Setup:**
-- NPM token must be configured as `NPM_TOKEN` in GitHub secrets
-- Token must have publish permissions for `@lc-trading-services` scope
+See [Contributing](#publishing-packages) section for detailed publishing instructions.
 
 ## Contributing
 
@@ -519,170 +278,41 @@ npx nx g @nx/js:lib libs/your-library-name --publishable --importPath=@lc-tradin
 
 ### Publishing Packages
 
-This monorepo uses **independent versioning** - each library and application can be versioned and published separately.
+This monorepo uses **independent versioning** - each package can be versioned and published separately.
 
-#### Prerequisites for Publishing
+**To publish a package:**
 
-1. **NPM Access**: Ensure you have publish permissions for the `@lc-trading-services` scope
-2. **GitHub Secrets**: The `NPM_TOKEN` secret must be configured in the repository
-
-#### Publishing Process
-
-Publishing is automated via GitHub Actions. To publish a package:
-
-1. **Ensure all changes are committed and merged to `main`**
-
-2. **Create a version tag** following the format: `<package-name>-v<version>`
-
+1. Ensure changes are merged to `main`
+2. Create and push a tag: `<package-name>-v<version>`
    ```bash
-   # For trading-data-client library
    git tag trading-data-client-v0.2.0
    git push origin trading-data-client-v0.2.0
    ```
+3. GitHub Actions automatically tests, builds, and publishes to NPM
 
-3. **GitHub Actions will automatically**:
-   - Extract the package name and version from the tag
-   - Install dependencies
-   - Update the package version in `package.json`
-   - Run tests for the specific package
-   - Build the specific package
-   - Publish to NPM with provenance
-   - Create a GitHub release
+**Tag Format:** `<package-name>-v<version>` (e.g., `trading-data-client-v0.1.0`, `my-lib-v2.0.0-beta.1`)
 
-#### Tag Format
+**Semantic Versioning:**
+- MAJOR (x.0.0): Breaking changes
+- MINOR (0.x.0): New features (backward compatible)
+- PATCH (0.0.x): Bug fixes
 
-Tags must follow this format: `<package-name>-v<version>`
-
-**Valid examples:**
-- `trading-data-client-v0.1.0` - Publish trading-data-client version 0.1.0
-- `trading-data-client-v1.2.3-beta.1` - Publish pre-release version
-- `my-new-lib-v2.0.0` - Publish a different library version 2.0.0
-
-**Invalid formats:**
-- `v0.1.0` - Missing package name
-- `trading-data-client-0.1.0` - Missing 'v' prefix
-
-#### Semantic Versioning
-
-Follow [Semantic Versioning](https://semver.org/) principles:
-
-- **MAJOR** (x.0.0): Breaking changes
-- **MINOR** (0.x.0): New features (backward compatible)
-- **PATCH** (0.0.x): Bug fixes (backward compatible)
-
-**Pre-release versions:**
-- `1.0.0-alpha.1` - Alpha release
-- `1.0.0-beta.1` - Beta release
-- `1.0.0-rc.1` - Release candidate
-
-#### Publishing Multiple Packages
-
-Each package is published independently:
-
+**Adding a New Package:**
 ```bash
-# Publish trading-data-client version 0.2.0
-git tag trading-data-client-v0.2.0
-git push origin trading-data-client-v0.2.0
+# Create library
+npx nx g @nx/js:lib libs/my-lib --publishable --importPath=@lc-trading-services/my-lib
 
-# Publish another-lib version 1.0.0 (when it exists)
-git tag another-lib-v1.0.0
-git push origin another-lib-v1.0.0
+# Configure package.json with name, version, and publishConfig
+
+# Publish first version
+git tag my-lib-v0.0.1
+git push origin my-lib-v0.0.1
 ```
 
-#### Adding a New Publishable Package
-
-When adding a new library or application:
-
-1. **Create the package** using Nx generators:
-
-   ```bash
-   # For a library
-   npx nx g @nx/js:lib libs/my-new-lib --publishable --importPath=@lc-trading-services/my-new-lib
-   
-   # For an application
-   npx nx g @nx/node:application apps/my-new-app
-   ```
-
-2. **Configure package.json** in the new package:
-
-   ```json
-   {
-     "name": "@lc-trading-services/my-new-lib",
-     "version": "0.0.1",
-     "publishConfig": {
-       "access": "public"
-     },
-     "files": [
-       "dist",
-       "README.md",
-       "LICENSE"
-     ]
-   }
-   ```
-
-3. **Publish the first version**:
-
-   ```bash
-   git tag my-new-lib-v0.0.1
-   git push origin my-new-lib-v0.0.1
-   ```
-
-#### Troubleshooting Publishing Issues
-
-**Publishing Failed:**
-1. Check GitHub Actions logs for error messages
-2. Verify `NPM_TOKEN` secret is valid
-3. Check package.json for correct name and version
-4. Test locally: try building and testing the package
-
-**Tag Already Exists:**
-```bash
-# Delete local tag
-git tag -d trading-data-client-v0.1.0
-
-# Delete remote tag
-git push origin :refs/tags/trading-data-client-v0.1.0
-
-# Create correct tag
-git tag trading-data-client-v0.1.0
-git push origin trading-data-client-v0.1.0
-```
-
-**Version Conflicts:**
-- NPM doesn't allow overwriting existing versions
-- Increment the version number and create a new tag
-
-#### Best Practices for Publishing
-
-1. **Test Before Publishing**: Always run tests and builds locally before tagging
-2. **Update Changelogs**: Document changes in the package's README or CHANGELOG
-3. **Review Changes**: Use `git diff` to review changes before committing
-4. **Coordinate Releases**: Communicate with team members about upcoming releases
-5. **Follow Semver**: Use semantic versioning consistently
-6. **Tag After Merge**: Only tag commits that are merged to `main`
-
-#### Local Testing
-
-To test publishing without actually publishing to NPM:
-
-**Using Verdaccio (local NPM registry):**
-```bash
-# Start local registry
-npx nx local-registry
-
-# In another terminal, publish to local registry
-cd libs/trading-data-client
-npm publish --registry http://localhost:4873
-```
-
-**Using npm pack:**
-```bash
-cd libs/trading-data-client
-npm pack
-# This creates a .tgz file you can inspect or install locally
-```
-
-For more detailed information, see [PUBLISHING.md](PUBLISHING.md).
+**Troubleshooting:**
+- Check GitHub Actions logs for publish failures
+- Delete wrong tags: `git tag -d <tag> && git push origin :refs/tags/<tag>`
+- Test locally: `npx nx local-registry` or `npm pack`
 
 ### Pull Request Process
 
