@@ -1,0 +1,54 @@
+name: "Feature Request / Enhancement"
+description: "Describe a desired feature or change so that GitHub Copilot can understand and implement it."
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal / Purpose
+      description: "What should be achieved? Why is it important?"
+      placeholder: "Example: I want a function that searches for users in the database..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Background / Context
+      description: "Are there any existing functions, code components, or requirements that are relevant?"
+      placeholder: "Example: There is already a User model, but no search logic..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: requirements
+    attributes:
+      label: Requirements / Acceptance Criteria
+      description: "Describe the requirements in clear, verifiable bullet points."
+      placeholder: |
+        - The function should do X.
+        - If Y happens, it should trigger Z.
+        - The return value should be a JSON object.
+    validations:
+      required: true
+
+  - type: textarea
+    id: code_context
+    attributes:
+      label: Relevant Code Snippets (optional)
+      description: "If helpful, include code that Copilot can use as a reference."
+      render: shell
+      placeholder: |
+        ```python
+        def example():
+            pass
+        ```
+
+  - type: textarea
+    id: tests
+    attributes:
+      label: Expected Tests (optional)
+      description: "Which tests should be added or updated?"
+      placeholder: |
+        - Unit test for X
+        - Integration test for Y
