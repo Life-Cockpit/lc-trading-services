@@ -517,6 +517,173 @@ Use Nx generators to create new libraries:
 npx nx g @nx/js:lib libs/your-library-name --publishable --importPath=@lc-trading-services/your-library-name
 ```
 
+### Publishing Packages
+
+This monorepo uses **independent versioning** - each library and application can be versioned and published separately.
+
+#### Prerequisites for Publishing
+
+1. **NPM Access**: Ensure you have publish permissions for the `@lc-trading-services` scope
+2. **GitHub Secrets**: The `NPM_TOKEN` secret must be configured in the repository
+
+#### Publishing Process
+
+Publishing is automated via GitHub Actions. To publish a package:
+
+1. **Ensure all changes are committed and merged to `main`**
+
+2. **Create a version tag** following the format: `<package-name>-v<version>`
+
+   ```bash
+   # For trading-data-client library
+   git tag trading-data-client-v0.2.0
+   git push origin trading-data-client-v0.2.0
+   ```
+
+3. **GitHub Actions will automatically**:
+   - Extract the package name and version from the tag
+   - Install dependencies
+   - Update the package version in `package.json`
+   - Run tests for the specific package
+   - Build the specific package
+   - Publish to NPM with provenance
+   - Create a GitHub release
+
+#### Tag Format
+
+Tags must follow this format: `<package-name>-v<version>`
+
+**Valid examples:**
+- `trading-data-client-v0.1.0` - Publish trading-data-client version 0.1.0
+- `trading-data-client-v1.2.3-beta.1` - Publish pre-release version
+- `my-new-lib-v2.0.0` - Publish a different library version 2.0.0
+
+**Invalid formats:**
+- `v0.1.0` - Missing package name
+- `trading-data-client-0.1.0` - Missing 'v' prefix
+
+#### Semantic Versioning
+
+Follow [Semantic Versioning](https://semver.org/) principles:
+
+- **MAJOR** (x.0.0): Breaking changes
+- **MINOR** (0.x.0): New features (backward compatible)
+- **PATCH** (0.0.x): Bug fixes (backward compatible)
+
+**Pre-release versions:**
+- `1.0.0-alpha.1` - Alpha release
+- `1.0.0-beta.1` - Beta release
+- `1.0.0-rc.1` - Release candidate
+
+#### Publishing Multiple Packages
+
+Each package is published independently:
+
+```bash
+# Publish trading-data-client version 0.2.0
+git tag trading-data-client-v0.2.0
+git push origin trading-data-client-v0.2.0
+
+# Publish another-lib version 1.0.0 (when it exists)
+git tag another-lib-v1.0.0
+git push origin another-lib-v1.0.0
+```
+
+#### Adding a New Publishable Package
+
+When adding a new library or application:
+
+1. **Create the package** using Nx generators:
+
+   ```bash
+   # For a library
+   npx nx g @nx/js:lib libs/my-new-lib --publishable --importPath=@lc-trading-services/my-new-lib
+   
+   # For an application
+   npx nx g @nx/node:application apps/my-new-app
+   ```
+
+2. **Configure package.json** in the new package:
+
+   ```json
+   {
+     "name": "@lc-trading-services/my-new-lib",
+     "version": "0.0.1",
+     "publishConfig": {
+       "access": "public"
+     },
+     "files": [
+       "dist",
+       "README.md",
+       "LICENSE"
+     ]
+   }
+   ```
+
+3. **Publish the first version**:
+
+   ```bash
+   git tag my-new-lib-v0.0.1
+   git push origin my-new-lib-v0.0.1
+   ```
+
+#### Troubleshooting Publishing Issues
+
+**Publishing Failed:**
+1. Check GitHub Actions logs for error messages
+2. Verify `NPM_TOKEN` secret is valid
+3. Check package.json for correct name and version
+4. Test locally: try building and testing the package
+
+**Tag Already Exists:**
+```bash
+# Delete local tag
+git tag -d trading-data-client-v0.1.0
+
+# Delete remote tag
+git push origin :refs/tags/trading-data-client-v0.1.0
+
+# Create correct tag
+git tag trading-data-client-v0.1.0
+git push origin trading-data-client-v0.1.0
+```
+
+**Version Conflicts:**
+- NPM doesn't allow overwriting existing versions
+- Increment the version number and create a new tag
+
+#### Best Practices for Publishing
+
+1. **Test Before Publishing**: Always run tests and builds locally before tagging
+2. **Update Changelogs**: Document changes in the package's README or CHANGELOG
+3. **Review Changes**: Use `git diff` to review changes before committing
+4. **Coordinate Releases**: Communicate with team members about upcoming releases
+5. **Follow Semver**: Use semantic versioning consistently
+6. **Tag After Merge**: Only tag commits that are merged to `main`
+
+#### Local Testing
+
+To test publishing without actually publishing to NPM:
+
+**Using Verdaccio (local NPM registry):**
+```bash
+# Start local registry
+npx nx local-registry
+
+# In another terminal, publish to local registry
+cd libs/trading-data-client
+npm publish --registry http://localhost:4873
+```
+
+**Using npm pack:**
+```bash
+cd libs/trading-data-client
+npm pack
+# This creates a .tgz file you can inspect or install locally
+```
+
+For more detailed information, see [PUBLISHING.md](PUBLISHING.md).
+
 ### Pull Request Process
 
 1. Ensure your code builds without errors
