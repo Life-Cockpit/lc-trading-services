@@ -36,17 +36,39 @@ This is an Nx monorepo with the following structure:
 
 ```
 lc-trading-services/
+├── apps/                    # Applications
+│   └── trading-indicators/  # Trading indicators library
 ├── libs/                    # Shared libraries
-│   └── trading-data-client/          # Yahoo Finance implementation
+│   └── trading-data-client/ # Yahoo Finance implementation
 ├── examples/                # Usage examples
 ├── package.json            # Root package configuration
 ├── nx.json                 # Nx workspace configuration
 └── tsconfig.base.json      # Shared TypeScript configuration
 ```
 
-### Libraries
+### Applications
 
-The project currently does not have an `/apps` directory - all functionality is provided through reusable libraries in the `/libs` directory.
+#### `trading-indicators`
+
+**Package:** `@lc-trading-services/trading-indicators`
+
+A comprehensive trading indicators library providing technical analysis tools including support/resistance zones, ATR, EMA, and high/low calculations.
+
+**[📖 View trading-indicators documentation](apps/trading-indicators/README.md)**
+
+**Installation:**
+```bash
+npm install @lc-trading-services/trading-indicators
+```
+
+**Key Features:**
+- Average True Range (ATR) for 1d and 1h intervals
+- Exponential Moving Averages (EMA 9, 20, 50, 200)
+- Support and Resistance zone identification
+- All-time high and low calculations
+- 52-week high and low calculations
+
+### Libraries
 
 #### `trading-data-client`
 
@@ -100,6 +122,7 @@ npm install @lc-trading-services/trading-data-client
 
 Each library is published to the [NPM registry](https://www.npmjs.com/) and can be installed using npm. See individual library documentation for specific installation and usage instructions:
 
+- **[trading-indicators](apps/trading-indicators/README.md)** - Technical analysis indicators (ATR, EMA, Support/Resistance, High/Low)
 - **[trading-data-client](libs/trading-data-client/README.md)** - Yahoo Finance integration for trading data
 
 For usage examples, see the [examples directory](examples/) or refer to individual library documentation.

@@ -37,7 +37,9 @@
     "version": {
       "preVersionCommand": "npx nx run-many -t build --projects={projectName}"
     },
-    "projects": ["*"],
+    "projects": [
+      "*"
+    ],
     "changelog": {
       "workspaceChangelog": false,
       "projectChangelog": {

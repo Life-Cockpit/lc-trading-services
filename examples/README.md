@@ -27,6 +27,18 @@ npx ts-node --esm examples/crypto-example.ts
 
 # Intraday data example
 npx ts-node --esm examples/intraday-example.ts
+
+# ATR indicator example
+npx ts-node --esm examples/atr-example.ts
+
+# EMA indicator example
+npx ts-node --esm examples/ema-example.ts
+
+# High/Low calculations example
+npx ts-node --esm examples/high-low-example.ts
+
+# Support/Resistance zones example
+npx ts-node --esm examples/support-resistance-example.ts
 ```
 
 ### Or compile and run with Node.js
@@ -71,6 +83,43 @@ Demonstrates how to:
 - Compare data point counts across different intervals
 - Analyze intraday volatility and price ranges
 - Work with high-frequency trading data
+
+### atr-example.ts
+
+Demonstrates how to:
+- Calculate Average True Range (ATR) for volatility measurement
+- Use ATR with different time intervals (1d, 1h)
+- Compare volatility across different symbols
+- Apply ATR to trading strategies (stop-loss and profit targets)
+
+### ema-example.ts
+
+Demonstrates how to:
+- Calculate Exponential Moving Averages (EMA 9, 20, 50, 200)
+- Perform trend analysis using multiple EMAs
+- Detect Golden Cross and Death Cross signals
+- Implement EMA crossover trading strategies
+- Compare EMAs across different symbols and time intervals
+
+### high-low-example.ts
+
+Demonstrates how to:
+- Calculate all-time high and low prices
+- Calculate 52-week high and low prices
+- Analyze distance from key price levels
+- Determine position within 52-week range
+- Generate trading insights based on high/low levels
+- Compare volatility across different symbols
+
+### support-resistance-example.ts
+
+Demonstrates how to:
+- Identify support and resistance zones for daily and hourly intervals
+- Analyze zone strength and frequency
+- Find nearest support and resistance levels for trading
+- Implement trading strategies using support/resistance zones
+- Detect potential breakout areas
+- Perform zone clustering analysis
 
 ## Note
 
