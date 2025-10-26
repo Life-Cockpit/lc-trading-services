@@ -26,12 +26,13 @@ export function normalizeSymbol(symbol: string): string {
   
   // Handle forex pairs with slash (e.g., "EUR/USD")
   if (trimmedSymbol.includes('/')) {
-    const withoutSlash = trimmedSymbol.replace('/', '');
+    const withoutSlash = trimmedSymbol.replaceAll('/', '');
     return `${withoutSlash}=X`;
   }
   
   // Check if it's a forex pair (6 uppercase letters, common currency codes)
   // Common forex pattern: XXXYYY where XXX and YYY are 3-letter currency codes
+  // Only process uppercase symbols to avoid false positives with stock tickers
   const forexPattern = /^[A-Z]{6}$/;
   if (forexPattern.test(trimmedSymbol)) {
     // Verify it looks like a forex pair by checking common currency codes
