@@ -1,109 +1,283 @@
-# LcTradingServices
+# Life Cockpit Trading Services
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A TypeScript-based monorepo for trading data services, providing modular libraries for fetching and managing financial market data. Built with Nx, this project offers type-safe interfaces and implementations for accessing trading data from various sources.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## Overview
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+This repository contains reusable TypeScript libraries designed to facilitate integration with financial data providers. The project follows a clean architecture approach by separating interface definitions from concrete implementations, enabling flexibility and testability in your trading applications.
 
-## Generate a library
+**Key Features:**
+- 🔌 Provider-agnostic trading data interfaces
+- 📊 Yahoo Finance integration for real-time and historical data
+- 💱 Support for Forex, stocks, ETFs, and cryptocurrencies
+- ⏱️ Multiple time intervals (1m to 1mo)
+- 📦 Publishable npm packages
+- ✅ Type-safe TypeScript implementation
+- 🧪 Comprehensive test coverage
 
-```sh
-npx nx g @nx/js:lib packages/pkg1 --publishable --importPath=@my-org/pkg1
-```
+## Project Structure
 
-## Run tasks
-
-To build the library use:
-
-```sh
-npx nx build pkg1
-```
-
-To run any task with Nx use:
-
-```sh
-npx nx <target> <project-name>
-```
-
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
-
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Versioning and releasing
-
-To version and release the library use
+This is an Nx monorepo with the following structure:
 
 ```
-npx nx release
+lc-trading-services/
+├── libs/                    # Shared libraries
+│   ├── lc-trading-data-interface/    # Core data interfaces
+│   └── trading-data-client/          # Yahoo Finance implementation
+├── examples/                # Usage examples
+├── package.json            # Root package configuration
+├── nx.json                 # Nx workspace configuration
+└── tsconfig.base.json      # Shared TypeScript configuration
 ```
 
-Pass `--dry-run` to see what would happen without actually releasing the library.
+### Libraries
 
-[Learn more about Nx release &raquo;](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+The project currently does not have an `/apps` directory - all functionality is provided through reusable libraries in the `/libs` directory. Each library is a standalone, publishable npm package that can be consumed by external applications.
 
-## Keep TypeScript project references up to date
+#### Available Libraries
 
-Nx automatically updates TypeScript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html) in `tsconfig.json` files to ensure they remain accurate based on your project dependencies (`import` or `require` statements). This sync is automatically done when running tasks such as `build` or `typecheck`, which require updated references to function correctly.
+The repository contains the following libraries:
 
-To manually trigger the process to sync the project graph dependencies information to the TypeScript project references, run the following command:
+#### `lc-trading-data-interface`
 
-```sh
+**Package:** `@lc-trading-services/lc-trading-data-interface`
+
+This library provides TypeScript interfaces and types that define the contract for trading data providers. It serves as the foundation for all trading data implementations in the project.
+
+**Key Exports:**
+- `ITradingDataProvider` - Main interface for data providers
+- `OHLCVData` - Open, High, Low, Close, Volume data structure
+- `QuoteData` - Real-time quote information
+- `HistoricalDataParams` - Parameters for historical data requests
+- `TimeInterval` - Supported time intervals (1m, 5m, 15m, 1h, 1d, 1wk, 1mo)
+
+**Purpose:** Decouples data consumers from specific provider implementations, enabling easy swapping of data sources without code changes.
+
+#### `trading-data-client`
+
+**Package:** `@lc-trading-services/trading-data-client`
+
+A concrete implementation of the `ITradingDataProvider` interface using Yahoo Finance as the data source. This client provides production-ready access to financial market data.
+
+**Features:**
+- Real-time quotes for stocks, Forex, and cryptocurrencies
+- Historical OHLCV data with configurable time intervals
+- Support for intraday and daily data
+- Robust error handling
+- Type-safe API based on the interface definitions
+
+**Supported Assets:**
+- Forex pairs (e.g., `EURUSD=X`)
+- Stocks (e.g., `AAPL`, `MSFT`)
+- ETFs and indices
+- Cryptocurrencies (e.g., `BTC-USD`)
+
+## Installation and Setup
+
+### Prerequisites
+
+- Node.js (v20 or higher recommended)
+- npm (comes with Node.js)
+
+### Quick Start
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Life-Cockpit/lc-trading-services.git
+   cd lc-trading-services
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Build all libraries:**
+   ```bash
+   npx nx run-many -t build
+   ```
+
+4. **Run tests:**
+   ```bash
+   npx nx run-many -t test
+   ```
+
+5. **Type check:**
+   ```bash
+   npx nx run-many -t typecheck
+   ```
+
+### Using the Libraries in Your Project
+
+Install the published packages (once published to npm):
+
+```bash
+npm install @lc-trading-services/lc-trading-data-interface
+npm install @lc-trading-services/trading-data-client
+```
+
+Or use them locally during development:
+
+```bash
+# In your project
+npm install /path/to/lc-trading-services/libs/lc-trading-data-interface
+npm install /path/to/lc-trading-services/libs/trading-data-client
+```
+
+### Running Examples
+
+The `examples/` directory contains sample code demonstrating library usage:
+
+```bash
+# Build the libraries first
+npx nx run-many -t build
+
+# Run an example
+npx ts-node --esm examples/forex-example.ts
+```
+
+## Development Workflow
+
+### Building Specific Libraries
+
+```bash
+# Build a single library
+npx nx build lc-trading-data-interface
+npx nx build trading-data-client
+
+# Build all
+npx nx run-many -t build
+```
+
+### Testing
+
+```bash
+# Test a single library
+npx nx test lc-trading-data-interface
+npx nx test trading-data-client
+
+# Test all
+npx nx run-many -t test
+```
+
+### Type Checking
+
+```bash
+# Type check a single library
+npx nx typecheck lc-trading-data-interface
+
+# Type check all
+npx nx run-many -t typecheck
+```
+
+### Viewing the Project Graph
+
+Visualize project dependencies:
+
+```bash
+npx nx graph
+```
+
+### Syncing TypeScript Project References
+
+Nx automatically keeps TypeScript project references in sync. To manually sync:
+
+```bash
 npx nx sync
 ```
 
-You can enforce that the TypeScript project references are always in the correct state when running in CI by adding a step to your CI job configuration that runs the following command:
+To verify sync status (useful in CI):
 
-```sh
+```bash
 npx nx sync:check
 ```
 
-[Learn more about nx sync](https://nx.dev/reference/nx-commands#sync)
+## Contributing
 
-## Set up CI!
+We welcome contributions to the Life Cockpit Trading Services project! Here's how you can help:
 
-### Step 1
+### Getting Started
 
-To connect to Nx Cloud, run the following command:
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Commit your changes using conventional commits (`git commit -m 'feat: add amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Open a Pull Request
 
-```sh
-npx nx connect
+### Commit Message Convention
+
+We follow the conventional commits specification:
+
+- `feat(scope): description` - New features
+- `fix(scope): description` - Bug fixes
+- `docs(scope): description` - Documentation changes
+- `refactor(scope): description` - Code refactoring
+- `test(scope): description` - Test additions or modifications
+- `chore(scope): description` - Build process or tooling changes
+
+Example: `feat(trading-client): add support for options data`
+
+### Code Standards
+
+- Follow TypeScript strict mode guidelines
+- Write unit tests for new functionality
+- Ensure all tests pass before submitting PR
+- Update documentation for API changes
+- Keep libraries focused with single responsibility
+- Use descriptive variable and function names
+
+### Adding a New Library
+
+Use Nx generators to create new libraries:
+
+```bash
+npx nx g @nx/js:lib libs/your-library-name --publishable --importPath=@lc-trading-services/your-library-name
 ```
 
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+### Pull Request Process
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+1. Ensure your code builds without errors
+2. Run all tests and ensure they pass
+3. Update the README if you've added new features
+4. Describe your changes clearly in the PR description
+5. Link any related issues
 
-### Step 2
+### Reporting Issues
 
-Use the following command to configure a CI workflow for your workspace:
+- Use the GitHub issue tracker
+- Provide detailed reproduction steps
+- Include error messages and logs
+- Specify your environment (Node.js version, OS, etc.)
 
-```sh
-npx nx g ci-workflow
+## License
+
+This project is licensed under the MIT License.
+
+```
+MIT License
+
+Copyright (c) 2025 Life Cockpit
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 ```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
 
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/nx-api/js?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+**Built with [Nx](https://nx.dev) • Powered by TypeScript**
