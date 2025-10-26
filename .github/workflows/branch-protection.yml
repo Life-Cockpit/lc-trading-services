@@ -28,14 +28,12 @@ jobs:
             if (prHeadRef !== baseBranch) {
               const message = `❌ **Branch Protection Policy Violation**
 
-              Pull requests to \`main\` branch are only allowed from \
-              \`${baseBranch}\` branch.
+              Pull requests to \`main\` branch are only allowed from \`${baseBranch}\` branch.
 
               **Current PR source:** \`${prHeadRef}\`
               **Required source:** \`${baseBranch}\`
 
-              Please close this PR and create a new one from the \
-              \`${baseBranch}\` branch.
+              Please close this PR and create a new one from the \`${baseBranch}\` branch.
               `;
 
               // Comment on the PR
@@ -52,8 +50,7 @@ jobs:
             } else {
               const message = `✅ **Branch Protection Check Passed**
 
-              This pull request correctly originates from the \
-              \`${baseBranch}\` branch.
+              This pull request correctly originates from the \`${baseBranch}\` branch.
               `;
 
               // Comment on the PR
