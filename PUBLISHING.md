@@ -4,7 +4,7 @@ This guide explains how to publish the `trading-data-client` library to the NPM 
 
 ## Overview
 
-The `trading-data-client` library and its dependency `lc-trading-data-interface` are published to NPM automatically via GitHub Actions when changes are merged to the `main` branch.
+The `trading-data-client` library is published to NPM automatically via GitHub Actions when a version tag is pushed to the repository.
 
 ## Prerequisites
 
@@ -37,27 +37,43 @@ These are configured in the workflow file.
 
 ## Publishing Process
 
-### Automated Publishing (Recommended)
+### Tag-Based Publishing (Recommended)
 
-1. **Update Version Numbers**
+1. **Ensure Changes are Merged**
    
-   Update the version in the appropriate `package.json` file(s):
+   Make sure all your changes are merged to the `main` branch.
+
+2. **Create and Push Git Tag**
    
-   ```bash
-   # For interface changes
-   # Edit libs/lc-trading-data-interface/package.json
-   
-   # For client changes
-   # Edit libs/trading-data-client/package.json
-   ```
-   
-   Follow [semantic versioning](https://semver.org/):
+   Tag the release with a version number following [semantic versioning](https://semver.org/):
    - **Patch** (0.0.x): Bug fixes, documentation updates
    - **Minor** (0.x.0): New features, backward compatible
    - **Major** (x.0.0): Breaking changes
-
-2. **Create and Merge PR**
    
+   ```bash
+   # Checkout and update main branch
+   git checkout main
+   git pull origin main
+   
+   # Create a tag for the version
+   git tag v0.1.0
+   
+   # Or use annotated tag with message
+   git tag -a v0.1.0 -m "Release version 0.1.0"
+   
+   # Push the tag to trigger publishing
+   git push origin v0.1.0
+   ```
+
+3. **Automatic Publishing**
+   
+   Once the tag is pushed:
+   - GitHub Actions workflow triggers automatically
+   - Extracts version from tag name
+   - Runs tests and builds the library
+   - Updates package.json with the version
+   - Publishes to NPM with provenance
+   - Creates a GitHub release
    ```bash
    git checkout -b release/v0.0.2
    # Make your version changes

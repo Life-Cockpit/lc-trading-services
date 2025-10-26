@@ -2,7 +2,7 @@ import { TradingDataClient } from './trading-data-client';
 import type {
   OHLCVData,
   QuoteData,
-} from '@lc-trading-services/lc-trading-data-interface';
+} from './types/index.js';
 
 // Mock yahoo-finance2
 const mockChartFn = jest.fn();

@@ -5,7 +5,7 @@ import type {
   OHLCVData,
   QuoteData,
   TimeInterval,
-} from '@lc-trading-services/lc-trading-data-interface';
+} from './types/index.js';
 import { normalizeSymbol } from './symbol-normalizer.js';
 
 /**

@@ -45,8 +45,7 @@
   ],
   "dependencies": {
     "tslib": "^2.3.0",
-    "yahoo-finance2": "^3.10.0",
-    "@lc-trading-services/lc-trading-data-interface": "^0.0.1"
+    "yahoo-finance2": "^3.10.0"
   },
   "publishConfig": {
     "access": "public"

@@ -109,27 +109,21 @@ A concrete implementation of the `ITradingDataProvider` interface using Yahoo Fi
 
 ### Using the Libraries in Your Project
 
-The libraries are published to the [NPM registry](https://www.npmjs.com/) and can be installed using npm:
+The library is published to the [NPM registry](https://www.npmjs.com/) and can be installed using npm:
 
 ```bash
-# Install both libraries
 npm install @lc-trading-services/trading-data-client
-
-# Or install just the interface (if implementing your own provider)
-npm install @lc-trading-services/lc-trading-data-interface
 ```
 
-The `trading-data-client` package automatically installs `lc-trading-data-interface` as a dependency.
+The package includes all necessary TypeScript types and interfaces.
 
-**NPM Package Links:**
+**NPM Package:**
 - [@lc-trading-services/trading-data-client](https://www.npmjs.com/package/@lc-trading-services/trading-data-client)
-- [@lc-trading-services/lc-trading-data-interface](https://www.npmjs.com/package/@lc-trading-services/lc-trading-data-interface)
 
-Or use them locally during development:
+Or use it locally during development:
 
 ```bash
 # In your project
-npm install /path/to/lc-trading-services/libs/lc-trading-data-interface
 npm install /path/to/lc-trading-services/libs/trading-data-client
 ```
 
@@ -234,24 +228,28 @@ The `trading-data-client` and `lc-trading-data-interface` libraries are automati
 
 ### For Library Consumers
 
-Install the packages from NPM:
+Install the package from NPM:
 
 ```bash
 npm install @lc-trading-services/trading-data-client
 ```
 
-See the [NPM packages](https://www.npmjs.com/org/lc-trading-services) for the latest versions.
+See the [NPM package](https://www.npmjs.com/package/@lc-trading-services/trading-data-client) for the latest version.
 
 ### For Maintainers
 
 To publish a new version:
 
-1. Update the version in the library's `package.json` following [semantic versioning](https://semver.org/)
-2. Create a PR with your changes
-3. After merging to `main`, GitHub Actions will automatically:
+1. Ensure all changes are merged to the `main` branch
+2. Create and push a Git tag with the version number following [semantic versioning](https://semver.org/):
+   ```bash
+   git tag v0.1.0
+   git push origin v0.1.0
+   ```
+3. GitHub Actions will automatically:
    - Run tests and builds
-   - Publish to NPM if version changed
-   - Create Git tags and GitHub releases
+   - Publish to NPM
+   - Create a GitHub release
 
 For detailed publishing instructions, see [PUBLISHING.md](PUBLISHING.md).
 
