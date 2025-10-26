@@ -38,7 +38,7 @@ async function main() {
   for (const symbol of stocks) {
     try {
       const quote = await client.getQuote(symbol);
-      console.log(`${symbol.padEnd(6)}: $${quote.price.toFixed(2)}`);
+      console.log(`${symbol.padEnd(6)}: $${quote.price?.toFixed(2) ?? '0.00'}`);
     } catch (error) {
       console.error(`Error fetching ${symbol}:`, error);
     }

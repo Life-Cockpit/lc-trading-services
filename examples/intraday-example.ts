@@ -101,7 +101,7 @@ async function main() {
         interval,
       });
       
-      console.log(`${interval.padEnd(4)} interval: ${data.length.toString().padStart(4)} candles`);
+      console.log(`${interval.padEnd(4)} interval: ${String(data.length).padStart(4)} candles`);
     }
   } catch (error) {
     console.error('Error comparing intervals:', error);

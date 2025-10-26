@@ -31,14 +31,14 @@ async function main() {
 
   console.log('=== Multiple Cryptocurrencies ===\n');
 
-  // Fetch quotes for multiple cryptocurrencies
+  // Fetch quotes for multiple cryptocurrencies (all use -USD suffix)
   const cryptos = ['BTC-USD', 'ETH-USD', 'BNB-USD', 'XRP-USD', 'ADA-USD'];
   
   for (const symbol of cryptos) {
     try {
       const quote = await client.getQuote(symbol);
       const name = symbol.replace('-USD', '');
-      console.log(`${name.padEnd(6)}: $${quote.price.toLocaleString()}`);
+      console.log(`${name.padEnd(6)}: $${quote.price?.toLocaleString() ?? '0'}`);
     } catch (error) {
       console.error(`Error fetching ${symbol}:`, error);
     }
