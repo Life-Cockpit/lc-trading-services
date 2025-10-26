@@ -36,46 +36,52 @@ This is an Nx monorepo with the following structure:
 
 ```
 lc-trading-services/
+├── apps/                    # Applications
+│   └── trading-indicators/  # Trading indicators library
 ├── libs/                    # Shared libraries
-│   └── trading-data-client/          # Yahoo Finance implementation
+│   └── trading-data-client/ # Yahoo Finance implementation
 ├── examples/                # Usage examples
 ├── package.json            # Root package configuration
 ├── nx.json                 # Nx workspace configuration
 └── tsconfig.base.json      # Shared TypeScript configuration
 ```
 
+### Applications
+
+#### `trading-indicators`
+
+**Package:** `@lc-trading-services/trading-indicators`
+
+A comprehensive trading indicators library providing technical analysis tools including support/resistance zones, ATR, EMA, and high/low calculations.
+
+**[📖 View trading-indicators documentation](apps/trading-indicators/README.md)**
+
+**Installation:**
+```bash
+npm install @lc-trading-services/trading-indicators
+```
+
+**Key Features:**
+- Average True Range (ATR) for 1d and 1h intervals
+- Exponential Moving Averages (EMA 9, 20, 50, 200)
+- Support and Resistance zone identification
+- All-time high and low calculations
+- 52-week high and low calculations
+
 ### Libraries
-
-The project currently does not have an `/apps` directory - all functionality is provided through reusable libraries in the `/libs` directory. The library is a standalone, publishable npm package that can be consumed by external applications.
-
-#### Available Library
 
 #### `trading-data-client`
 
 **Package:** `@lc-trading-services/trading-data-client`
 
-A Yahoo Finance-based trading data provider that provides production-ready access to financial market data. This library includes all necessary TypeScript interfaces and types.
+A Yahoo Finance-based trading data provider that provides production-ready access to financial market data.
 
-**Key Exports:**
-- `TradingDataClient` - Main client class for accessing trading data
-- `ITradingDataProvider` - Interface for data providers
-- `OHLCVData` - Open, High, Low, Close, Volume data structure
-- `QuoteData` - Real-time quote information
-- `HistoricalDataParams` - Parameters for historical data requests
-- `TimeInterval` - Supported time intervals (1m, 5m, 15m, 1h, 1d, 1wk, 1mo)
+**[📖 View trading-data-client documentation](libs/trading-data-client/README.md)**
 
-**Features:**
-- Real-time quotes for stocks, Forex, and cryptocurrencies
-- Historical OHLCV data with configurable time intervals
-- Support for intraday and daily data
-- Robust error handling
-- Type-safe API with all types included
-
-**Supported Assets:**
-- Forex pairs (e.g., `EURUSD`, `EUR/USD`)
-- Stocks (e.g., `AAPL`, `MSFT`)
-- ETFs and indices
-- Cryptocurrencies (e.g., `BTC-USD`)
+**Installation:**
+```bash
+npm install @lc-trading-services/trading-data-client
+```
 
 ## Installation and Setup
 
@@ -114,50 +120,12 @@ A Yahoo Finance-based trading data provider that provides production-ready acces
 
 ### Using the Libraries in Your Project
 
-The library is published to the [NPM registry](https://www.npmjs.com/) and can be installed using npm:
+Each library is published to the [NPM registry](https://www.npmjs.com/) and can be installed using npm. See individual library documentation for specific installation and usage instructions:
 
-```bash
-npm install @lc-trading-services/trading-data-client
-```
+- **[trading-indicators](apps/trading-indicators/README.md)** - Technical analysis indicators (ATR, EMA, Support/Resistance, High/Low)
+- **[trading-data-client](libs/trading-data-client/README.md)** - Yahoo Finance integration for trading data
 
-The package includes all necessary TypeScript types and interfaces.
-
-**NPM Package:**
-- [@lc-trading-services/trading-data-client](https://www.npmjs.com/package/@lc-trading-services/trading-data-client)
-
-Or use it locally during development:
-
-```bash
-# In your project
-npm install /path/to/lc-trading-services/libs/trading-data-client
-```
-
-### Quick Start Guide
-
-```typescript
-import { TradingDataClient } from '@lc-trading-services/trading-data-client';
-
-// Create client
-const client = new TradingDataClient();
-
-// Get real-time quote
-const quote = await client.getQuote('EUR/USD');
-console.log('Price:', quote.price);
-
-// Get historical data
-const data = await client.getHistoricalData({
-  symbol: 'AAPL',
-  startDate: new Date('2024-01-01'),
-  endDate: new Date('2024-01-31'),
-  interval: '1d'
-});
-```
-
-**Supported Intervals:** `1m`, `2m`, `5m`, `15m`, `30m`, `1h`, `1d`, `1wk`, `1mo`
-
-**Supported Assets:** Forex pairs (EUR/USD, EURUSD), Stocks (AAPL, MSFT), ETFs, Cryptocurrencies (BTC-USD)
-
-For detailed examples including Forex trading, stock analysis, intraday trading, TypeScript types, and error handling, see the [trading-data-client README](libs/trading-data-client/README.md) or check the [examples directory](examples/).
+For usage examples, see the [examples directory](examples/) or refer to individual library documentation.
 
 ## Development Workflow
 
