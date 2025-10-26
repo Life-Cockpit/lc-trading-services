@@ -15,7 +15,7 @@ async function main() {
 
   // Fetch current quote for EUR/USD
   try {
-    const eurUsdQuote = await client.getQuote('EURUSD=X');
+    const eurUsdQuote = await client.getQuote('EUR/USD');
     console.log('EUR/USD Current Quote:');
     console.log(`  Price: ${eurUsdQuote.price}`);
     console.log(`  Previous Close: ${eurUsdQuote.previousClose}`);
@@ -30,7 +30,7 @@ async function main() {
   console.log('=== Multiple Forex Pairs ===\n');
 
   // Fetch quotes for multiple Forex pairs
-  const forexPairs = ['EURUSD=X', 'GBPUSD=X', 'USDJPY=X', 'AUDUSD=X'];
+  const forexPairs = ['EUR/USD', 'GBP/USD', 'USD/JPY', 'AUD/USD'];
   
   for (const pair of forexPairs) {
     try {
@@ -51,7 +51,7 @@ async function main() {
 
     console.log('Fetching EUR/USD daily data for the last 30 days...');
     const historicalData = await client.getHistoricalData({
-      symbol: 'EURUSD=X',
+      symbol: 'EUR/USD',
       startDate,
       endDate,
       interval: '1d',

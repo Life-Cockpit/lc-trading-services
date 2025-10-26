@@ -6,6 +6,7 @@ import type {
   QuoteData,
   TimeInterval,
 } from '@lc-trading-services/lc-trading-data-interface';
+import { normalizeSymbol } from './symbol-normalizer.js';
 
 /**
  * Trading data client implementing the ITradingDataProvider interface
@@ -26,6 +27,9 @@ export class TradingDataClient implements ITradingDataProvider {
   async getHistoricalData(params: HistoricalDataParams): Promise<OHLCVData[]> {
     const { symbol, startDate, endDate, interval = '1d' } = params;
 
+    // Normalize the symbol to Yahoo Finance format
+    const normalizedSymbol = normalizeSymbol(symbol);
+
     try {
       const queryOptions = {
         period1: startDate,
@@ -34,7 +38,7 @@ export class TradingDataClient implements ITradingDataProvider {
       };
 
       // Use chart module for full interval support
-      const result = await this.yahooFinance.chart(symbol, queryOptions);
+      const result = await this.yahooFinance.chart(normalizedSymbol, queryOptions);
 
       // Check if result contains quotes
       if (!result.quotes || result.quotes.length === 0) {
@@ -59,12 +63,15 @@ export class TradingDataClient implements ITradingDataProvider {
 
   /**
    * Fetch current quote data for an asset
-   * @param symbol - Asset symbol (e.g., 'EURUSD=X' for Forex)
+   * @param symbol - Asset symbol (e.g., 'EURUSD', 'EUR/USD', or 'EURUSD=X' for Forex)
    * @returns Promise resolving to quote data
    */
   async getQuote(symbol: string): Promise<QuoteData> {
+    // Normalize the symbol to Yahoo Finance format
+    const normalizedSymbol = normalizeSymbol(symbol);
+
     try {
-      const quote = await this.yahooFinance.quote(symbol);
+      const quote = await this.yahooFinance.quote(normalizedSymbol);
 
       if (!quote) {
         throw new Error(`No quote data found for ${symbol}`);

@@ -1,0 +1,29 @@
+name: Validate PR Source Branch
+
+'on':
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate-source-branch:
+    name: validate-source-branch
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check if PR is from develop branch
+        run: |
+          echo "PR head branch: ${{ github.head_ref }}"
+          echo "Expected source: develop"
+
+          if [ "${{ github.head_ref }}" != "develop" ]; then
+            echo "::error::Pull requests to main must come from develop"
+            echo "::error::Current source: ${{ github.head_ref }}"
+            echo "::error::Required source: develop"
+            exit 1
+          fi
+
+          echo "✅ Branch protection check passed"
