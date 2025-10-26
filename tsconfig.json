@@ -4,13 +4,10 @@
   "files": [],
   "references": [
     {
-      "path": "./packages/lc-trading-data-interface"
+      "path": "./libs/trading-indicators"
     },
     {
-      "path": "./packages/trading-data-client"
-    },
-    {
-      "path": "./apps/trading-indicators"
+      "path": "./libs/trading-data-client"
     }
   ]
 }
