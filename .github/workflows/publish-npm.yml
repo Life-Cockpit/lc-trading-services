@@ -1,0 +1,208 @@
+name: Publish to NPM
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version bump type (major, minor, patch, or specific version like 1.2.3)'
+        required: false
+        default: 'patch'
+        type: string
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish-interface:
+    name: Publish lc-trading-data-interface to NPM
+    runs-on: ubuntu-latest
+    outputs:
+      interface-published: ${{ steps.version-check.outputs.needs_publish }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npx nx test lc-trading-data-interface
+
+      - name: Build library
+        run: npx nx build lc-trading-data-interface
+
+      - name: Check if version changed
+        id: version-check
+        run: |
+          # Get the current version from package.json
+          CURRENT_VERSION=$(node -p "require('./libs/lc-trading-data-interface/package.json').version")
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          
+          # Check if this version exists on NPM
+          NPM_VERSION=$(npm view @lc-trading-services/lc-trading-data-interface version 2>/dev/null || echo "0.0.0")
+          echo "npm_version=$NPM_VERSION" >> $GITHUB_OUTPUT
+          
+          if [ "$CURRENT_VERSION" != "$NPM_VERSION" ]; then
+            echo "needs_publish=true" >> $GITHUB_OUTPUT
+            echo "Version changed from $NPM_VERSION to $CURRENT_VERSION - will publish"
+          else
+            echo "needs_publish=false" >> $GITHUB_OUTPUT
+            echo "Version $CURRENT_VERSION already published - skipping"
+          fi
+
+      - name: Publish to NPM
+        if: steps.version-check.outputs.needs_publish == 'true'
+        run: |
+          cd libs/lc-trading-data-interface
+          npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create Git tag
+        if: steps.version-check.outputs.needs_publish == 'true'
+        run: |
+          VERSION=${{ steps.version-check.outputs.current_version }}
+          git tag -a "lc-trading-data-interface-v${VERSION}" -m "Release lc-trading-data-interface v${VERSION}"
+          git push origin "lc-trading-data-interface-v${VERSION}"
+
+      - name: Summary
+        if: steps.version-check.outputs.needs_publish == 'true'
+        run: |
+          VERSION=${{ steps.version-check.outputs.current_version }}
+          echo "## ✅ Successfully published lc-trading-data-interface v${VERSION}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📦 Package: [@lc-trading-services/lc-trading-data-interface](https://www.npmjs.com/package/@lc-trading-services/lc-trading-data-interface)" >> $GITHUB_STEP_SUMMARY
+
+  publish-client:
+    name: Publish trading-data-client to NPM
+    runs-on: ubuntu-latest
+    needs: publish-interface
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npx nx test trading-data-client
+
+      - name: Build library
+        run: npx nx build trading-data-client
+
+      - name: Check if version changed
+        id: version-check
+        run: |
+          # Get the current version from package.json
+          CURRENT_VERSION=$(node -p "require('./libs/trading-data-client/package.json').version")
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          
+          # Check if this version exists on NPM
+          NPM_VERSION=$(npm view @lc-trading-services/trading-data-client version 2>/dev/null || echo "0.0.0")
+          echo "npm_version=$NPM_VERSION" >> $GITHUB_OUTPUT
+          
+          if [ "$CURRENT_VERSION" != "$NPM_VERSION" ]; then
+            echo "needs_publish=true" >> $GITHUB_OUTPUT
+            echo "Version changed from $NPM_VERSION to $CURRENT_VERSION - will publish"
+          else
+            echo "needs_publish=false" >> $GITHUB_OUTPUT
+            echo "Version $CURRENT_VERSION already published - skipping"
+          fi
+
+      - name: Publish to NPM
+        if: steps.version-check.outputs.needs_publish == 'true'
+        run: |
+          cd libs/trading-data-client
+          npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create Git tag
+        if: steps.version-check.outputs.needs_publish == 'true'
+        run: |
+          VERSION=${{ steps.version-check.outputs.current_version }}
+          git tag -a "trading-data-client-v${VERSION}" -m "Release trading-data-client v${VERSION}"
+          git push origin "trading-data-client-v${VERSION}"
+
+      - name: Create GitHub Release
+        if: steps.version-check.outputs.needs_publish == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const version = '${{ steps.version-check.outputs.current_version }}';
+            const tagName = `trading-data-client-v${version}`;
+            
+            try {
+              await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: tagName,
+                name: `trading-data-client v${version}`,
+                body: `## trading-data-client v${version}\n\nPublished to NPM: https://www.npmjs.com/package/@lc-trading-services/trading-data-client/v/${version}\n\n### Installation\n\`\`\`bash\nnpm install @lc-trading-services/trading-data-client@${version}\n\`\`\``,
+                draft: false,
+                prerelease: version.includes('-')
+              });
+              console.log(`Created release for ${tagName}`);
+            } catch (error) {
+              console.error('Error creating release:', error.message);
+            }
+
+      - name: Summary
+        if: steps.version-check.outputs.needs_publish == 'true'
+        run: |
+          VERSION=${{ steps.version-check.outputs.current_version }}
+          echo "## ✅ Successfully published trading-data-client v${VERSION}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📦 Package: [@lc-trading-services/trading-data-client](https://www.npmjs.com/package/@lc-trading-services/trading-data-client)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Installation" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "npm install @lc-trading-services/trading-data-client@${VERSION}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+      - name: Skip message
+        if: steps.version-check.outputs.needs_publish == 'false'
+        run: |
+          VERSION=${{ steps.version-check.outputs.current_version }}
+          echo "## ℹ️ No publish needed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Version ${VERSION} is already published to NPM." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "To publish a new version, update the version in \`libs/trading-data-client/package.json\` and commit to main." >> $GITHUB_STEP_SUMMARY
+

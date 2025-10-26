@@ -35,6 +35,15 @@
   "release": {
     "version": {
       "preVersionCommand": "npx nx run-many -t build"
+    },
+    "projects": ["trading-data-client"],
+    "changelog": {
+      "workspaceChangelog": {
+        "createRelease": "github"
+      },
+      "projectChangelog": {
+        "createRelease": "github"
+      }
     }
   }
 }

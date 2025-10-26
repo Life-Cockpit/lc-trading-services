@@ -183,9 +183,67 @@ try {
 
 MIT
 
+## Development
 
 This library was generated with [Nx](https://nx.dev).
 
-## Building
+### Building
 
 Run `nx build trading-data-client` to build the library.
+
+### Testing
+
+Run `nx test trading-data-client` to execute the unit tests via [Jest](https://jestjs.io).
+
+## Publishing
+
+This library is published to the [NPM registry](https://www.npmjs.com/package/@lc-trading-services/trading-data-client) automatically via GitHub Actions when changes are merged to the `main` branch.
+
+### Publishing Process
+
+1. **Update Version**: Increment the version in `libs/trading-data-client/package.json` following [semver](https://semver.org/):
+   - **Patch** (0.0.x): Bug fixes and minor changes
+   - **Minor** (0.x.0): New features (backward compatible)
+   - **Major** (x.0.0): Breaking changes
+
+2. **Commit Changes**: Commit the version change to your branch
+
+3. **Create Pull Request**: Open a PR to the `main` branch
+
+4. **Review and Merge**: After review and CI checks pass, merge to `main`
+
+5. **Automatic Publishing**: The GitHub Actions workflow will:
+   - Run tests and build the library
+   - Check if the version has changed
+   - Publish to NPM if version is new
+   - Create a Git tag and GitHub release
+
+### Manual Publishing (Local Development)
+
+For testing purposes, you can publish to a local NPM registry:
+
+```bash
+# Start local registry
+npx nx local-registry
+
+# In another terminal, build and publish
+npx nx build trading-data-client
+cd libs/trading-data-client
+npm publish --registry http://localhost:4873
+```
+
+### NPM Token Setup
+
+To enable automatic publishing, a repository administrator must configure an NPM token:
+
+1. Create an NPM token with publish permissions at [npmjs.com](https://www.npmjs.com/settings/~/tokens)
+2. Add the token as a GitHub secret named `NPM_TOKEN` in the repository settings
+3. Ensure the token has permission to publish to the `@lc-trading-services` scope
+
+### Package Metadata
+
+- **Name**: `@lc-trading-services/trading-data-client`
+- **Scope**: `@lc-trading-services`
+- **Registry**: [npm.js](https://www.npmjs.com/package/@lc-trading-services/trading-data-client)
+- **Access**: Public
+- **License**: MIT
