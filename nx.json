@@ -33,14 +33,13 @@
     }
   ],
   "release": {
+    "projectsRelationship": "independent",
     "version": {
-      "preVersionCommand": "npx nx run-many -t build"
+      "preVersionCommand": "npx nx run-many -t build --projects={projectName}"
     },
-    "projects": ["trading-data-client"],
+    "projects": ["*"],
     "changelog": {
-      "workspaceChangelog": {
-        "createRelease": "github"
-      },
+      "workspaceChangelog": false,
       "projectChangelog": {
         "createRelease": "github"
       }
