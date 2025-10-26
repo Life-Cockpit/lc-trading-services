@@ -442,7 +442,7 @@ This monorepo uses **independent versioning** - each library and application can
 
 ### For Library Consumers
 
-Install packages from NPM:
+Install the package from NPM:
 
 ```bash
 npm install @lc-trading-services/trading-data-client
@@ -466,7 +466,7 @@ To publish a package, create and push a tag following the format `<package-name>
    - Publish to NPM
    - Create a GitHub release
 
-**Each package has its own version** - you can publish packages independently without affecting others.
+**Each package has its own version** - you can publish packages independently without affecting others. For example, trading-data-client can be at v2.1.0 while a new utility library remains at v0.1.0.
 
 For detailed publishing instructions, see [PUBLISHING.md](PUBLISHING.md).
 
