@@ -11,9 +11,24 @@ This repository contains reusable TypeScript libraries designed to facilitate in
 - 📊 Yahoo Finance integration for real-time and historical data
 - 💱 Support for Forex, stocks, ETFs, and cryptocurrencies
 - ⏱️ Multiple time intervals (1m to 1mo)
-- 📦 Publishable npm packages
+- 📦 Publishable npm packages with independent versioning
 - ✅ Type-safe TypeScript implementation
 - 🧪 Comprehensive test coverage
+
+## Monorepo Architecture
+
+This project uses **Nx with independent versioning** for maximum flexibility:
+
+- **Independent Packages**: Each library and app has its own version number
+- **Selective Publishing**: Publish only the packages that changed
+- **Dedicated Releases**: Each package gets its own git tags and releases
+- **Flexible Deployment**: Deploy packages independently without coordinating versions
+
+This architecture allows teams to:
+- Release breaking changes to one package without affecting others
+- Maintain different release cadences for different packages
+- Publish security fixes to specific packages quickly
+- Keep package versions aligned with semantic versioning principles
 
 ## Project Structure
 
@@ -423,11 +438,11 @@ npx nx sync:check
 
 ## Publishing to NPM
 
-The `trading-data-client` library is automatically published to NPM when a version tag is pushed.
+This monorepo uses **independent versioning** - each library and application can be versioned and published separately.
 
 ### For Library Consumers
 
-Install the package from NPM:
+Install packages from NPM:
 
 ```bash
 npm install @lc-trading-services/trading-data-client
@@ -437,18 +452,21 @@ See the [NPM package](https://www.npmjs.com/package/@lc-trading-services/trading
 
 ### For Maintainers
 
-To publish a new version:
+To publish a package, create and push a tag following the format `<package-name>-v<version>`:
 
 1. Ensure all changes are merged to the `main` branch
-2. Create and push a Git tag with the version number following [semantic versioning](https://semver.org/):
+2. Create and push a Git tag for the specific package:
    ```bash
-   git tag v0.1.0
-   git push origin v0.1.0
+   # Example: Publish trading-data-client version 0.2.0
+   git tag trading-data-client-v0.2.0
+   git push origin trading-data-client-v0.2.0
    ```
 3. GitHub Actions will automatically:
-   - Run tests and builds
+   - Run tests and build for that specific package
    - Publish to NPM
    - Create a GitHub release
+
+**Each package has its own version** - you can publish packages independently without affecting others.
 
 For detailed publishing instructions, see [PUBLISHING.md](PUBLISHING.md).
 

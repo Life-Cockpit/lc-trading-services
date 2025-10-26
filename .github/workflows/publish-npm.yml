@@ -3,8 +3,7 @@ name: Publish to NPM
 on:
   push:
     tags:
-      - 'v*.*.*'
-      - 'trading-data-client-v*.*.*'
+      - '*-v*.*.*'
 
 permissions:
   contents: write
@@ -12,7 +11,7 @@ permissions:
 
 jobs:
   publish:
-    name: Publish trading-data-client to NPM
+    name: Publish package to NPM
     runs-on: ubuntu-latest
 
     steps:
@@ -21,25 +20,38 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Extract version from tag
-        id: tag-version
+      - name: Extract package and version from tag
+        id: tag-info
         run: |
           # Get the tag name
           TAG_NAME=${GITHUB_REF#refs/tags/}
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
           
-          # Extract version (remove 'v' prefix or 'trading-data-client-v' prefix)
-          if [[ $TAG_NAME =~ ^v([0-9]+\.[0-9]+\.[0-9]+.*)$ ]]; then
-            VERSION="${BASH_REMATCH[1]}"
-          elif [[ $TAG_NAME =~ ^trading-data-client-v([0-9]+\.[0-9]+\.[0-9]+.*)$ ]]; then
-            VERSION="${BASH_REMATCH[1]}"
+          # Extract package name and version from tag format: <package-name>-v<version>
+          if [[ $TAG_NAME =~ ^(.+)-v([0-9]+\.[0-9]+\.[0-9]+.*)$ ]]; then
+            PACKAGE_NAME="${BASH_REMATCH[1]}"
+            VERSION="${BASH_REMATCH[2]}"
           else
-            echo "Invalid tag format: $TAG_NAME"
+            echo "Invalid tag format: $TAG_NAME. Expected format: <package-name>-v<version>"
             exit 1
           fi
           
+          echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Publishing version: $VERSION"
+          echo "Publishing package: $PACKAGE_NAME version: $VERSION"
+          
+          # Determine package directory (libs or apps)
+          if [ -d "libs/$PACKAGE_NAME" ]; then
+            PACKAGE_DIR="libs/$PACKAGE_NAME"
+          elif [ -d "apps/$PACKAGE_NAME" ]; then
+            PACKAGE_DIR="apps/$PACKAGE_NAME"
+          else
+            echo "Package directory not found for: $PACKAGE_NAME"
+            exit 1
+          fi
+          
+          echo "package_dir=$PACKAGE_DIR" >> $GITHUB_OUTPUT
+          echo "Package directory: $PACKAGE_DIR"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -53,20 +65,21 @@ jobs:
 
       - name: Update package version
         run: |
-          VERSION=${{ steps.tag-version.outputs.version }}
-          # Update trading-data-client version
-          cd libs/trading-data-client
+          VERSION=${{ steps.tag-info.outputs.version }}
+          PACKAGE_DIR=${{ steps.tag-info.outputs.package_dir }}
+          cd $PACKAGE_DIR
           npm version $VERSION --no-git-tag-version --allow-same-version
 
       - name: Run tests
-        run: npx nx test trading-data-client
+        run: npx nx test ${{ steps.tag-info.outputs.package_name }}
 
-      - name: Build library
-        run: npx nx build trading-data-client
+      - name: Build package
+        run: npx nx build ${{ steps.tag-info.outputs.package_name }}
 
       - name: Publish to NPM
         run: |
-          cd libs/trading-data-client
+          PACKAGE_DIR=${{ steps.tag-info.outputs.package_dir }}
+          cd $PACKAGE_DIR
           npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -75,16 +88,23 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const version = '${{ steps.tag-version.outputs.version }}';
-            const tagName = '${{ steps.tag-version.outputs.tag_name }}';
+            const version = '${{ steps.tag-info.outputs.version }}';
+            const tagName = '${{ steps.tag-info.outputs.tag_name }}';
+            const packageName = '${{ steps.tag-info.outputs.package_name }}';
+            const packageDir = '${{ steps.tag-info.outputs.package_dir }}';
+            
+            // Read package.json to get the npm package name
+            const fs = require('fs');
+            const packageJson = JSON.parse(fs.readFileSync(`${packageDir}/package.json`, 'utf8'));
+            const npmPackageName = packageJson.name;
             
             try {
               await github.rest.repos.createRelease({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 tag_name: tagName,
-                name: `trading-data-client v${version}`,
-                body: `## trading-data-client v${version}\n\nPublished to NPM: https://www.npmjs.com/package/@life-cockpit-services/trading-data-client/v/${version}\n\n### Installation\n\`\`\`bash\nnpm install @life-cockpit-services/trading-data-client@${version}\n\`\`\`\n\n### What's Changed\n\nSee the [commit history](https://github.com/${context.repo.owner}/${context.repo.repo}/commits/${tagName}) for details.`,
+                name: `${packageName} v${version}`,
+                body: `## ${packageName} v${version}\n\nPublished to NPM: https://www.npmjs.com/package/${npmPackageName}/v/${version}\n\n### Installation\n\`\`\`bash\nnpm install ${npmPackageName}@${version}\n\`\`\`\n\n### What's Changed\n\nSee the [commit history](https://github.com/${context.repo.owner}/${context.repo.repo}/commits/${tagName}) for details.`,
                 draft: false,
                 prerelease: version.includes('-') || version.includes('alpha') || version.includes('beta')
               });
@@ -95,14 +115,20 @@ jobs:
 
       - name: Summary
         run: |
-          VERSION=${{ steps.tag-version.outputs.version }}
-          echo "## ✅ Successfully published trading-data-client v${VERSION}" >> $GITHUB_STEP_SUMMARY
+          VERSION=${{ steps.tag-info.outputs.version }}
+          PACKAGE_NAME=${{ steps.tag-info.outputs.package_name }}
+          PACKAGE_DIR=${{ steps.tag-info.outputs.package_dir }}
+          
+          # Read npm package name from package.json
+          NPM_PACKAGE_NAME=$(node -p "require('./$PACKAGE_DIR/package.json').name")
+          
+          echo "## ✅ Successfully published $PACKAGE_NAME v${VERSION}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "📦 Package: [@life-cockpit-services/trading-data-client](https://www.npmjs.com/package/@life-cockpit-services/trading-data-client)" >> $GITHUB_STEP_SUMMARY
+          echo "📦 Package: [$NPM_PACKAGE_NAME](https://www.npmjs.com/package/$NPM_PACKAGE_NAME)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "🏷️ Tag: \`${{ steps.tag-version.outputs.tag_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "🏷️ Tag: \`${{ steps.tag-info.outputs.tag_name }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Installation" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
-          echo "npm install @life-cockpit-services/trading-data-client@${VERSION}" >> $GITHUB_STEP_SUMMARY
+          echo "npm install $NPM_PACKAGE_NAME@${VERSION}" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
