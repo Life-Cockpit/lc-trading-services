@@ -9,7 +9,6 @@ npm install @lc-trading-services/trading-data-client
 ```
 
 This package depends on:
-- `@lc-trading-services/lc-trading-data-interface` - The interface definitions
 - `yahoo-finance2` - Yahoo Finance API client
 
 ## Features
