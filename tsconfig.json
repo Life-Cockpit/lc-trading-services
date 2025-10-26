@@ -8,6 +8,9 @@
     },
     {
       "path": "./packages/trading-data-client"
+    },
+    {
+      "path": "./apps/trading-indicators"
     }
   ]
 }
