@@ -33,10 +33,28 @@ This directory contains CI/CD pipelines for the lc-trading-services project.
    - Uses NX affected commands for efficient testing
    - Tests only the libraries changed in the PR
    - Comments on PR with test results
-   
+
 2. **Security Check** - Security audit
    - Runs `npm audit` to check for vulnerabilities
    - Reports security issues
+
+### Validate PR Source Branch (`validate-pr-source.yml`)
+
+**Triggers:**
+- Pull requests targeting the `main` branch
+
+**Jobs:**
+1. **validate-source-branch** - Enforces branch protection policy
+   - Validates that PRs to `main` only come from `develop` branch
+   - Fails the check if PR source is not `develop`
+   - Required status check for the main branch ruleset
+
+**Purpose:**
+This workflow works in conjunction with the GitHub branch protection ruleset
+to ensure only PRs from `develop` can be merged to `main`. This enforces a
+Git Flow branching strategy where feature branches merge to develop first.
+
+See `.github/BRANCH_PROTECTION.md` for complete setup instructions.
 
 ## Running Tests Locally
 
