@@ -60,6 +60,18 @@ npx nx sync:check
 
 [Learn more about nx sync](https://nx.dev/reference/nx-commands#sync)
 
+## Branch Protection
+
+This repository uses branch protection rules to ensure code quality and maintain a clean git history. The `main` branch is protected and requires all changes to go through pull requests from the `develop` branch only.
+
+**Key rules:**
+- No direct commits to `main`
+- Pull requests to `main` must come from `develop` branch
+- Requires at least 1 approving review
+- All CI checks must pass
+
+For detailed information, see [Branch Protection Policy](.github/BRANCH_PROTECTION.md).
+
 ## Set up CI!
 
 ### Step 1
