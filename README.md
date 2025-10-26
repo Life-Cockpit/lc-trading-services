@@ -30,11 +30,11 @@ lc-trading-services/
 └── tsconfig.base.json      # Shared TypeScript configuration
 ```
 
-### Libraries (`/libs`)
+### Libraries and Apps
 
 The project currently does not have an `/apps` directory - all functionality is provided through reusable libraries in the `/libs` directory. Each library is a standalone, publishable npm package that can be consumed by external applications.
 
-### Libraries
+#### Available Libraries
 
 The repository contains the following libraries:
 
