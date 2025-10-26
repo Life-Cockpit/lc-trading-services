@@ -1,14 +1,13 @@
 # Examples
 
-This directory contains example code demonstrating how to use the trading data libraries.
+This directory contains example code demonstrating how to use the trading data library.
 
 ## Running the Examples
 
-First, make sure you have built the libraries:
+First, make sure you have built the library:
 
 ```bash
 npm install
-npx nx build lc-trading-data-interface
 npx nx build trading-data-client
 ```
 

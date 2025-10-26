@@ -1,0 +1,108 @@
+name: Publish to NPM
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+      - 'trading-data-client-v*.*.*'
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    name: Publish trading-data-client to NPM
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: tag-version
+        run: |
+          # Get the tag name
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+          
+          # Extract version (remove 'v' prefix or 'trading-data-client-v' prefix)
+          if [[ $TAG_NAME =~ ^v([0-9]+\.[0-9]+\.[0-9]+.*)$ ]]; then
+            VERSION="${BASH_REMATCH[1]}"
+          elif [[ $TAG_NAME =~ ^trading-data-client-v([0-9]+\.[0-9]+\.[0-9]+.*)$ ]]; then
+            VERSION="${BASH_REMATCH[1]}"
+          else
+            echo "Invalid tag format: $TAG_NAME"
+            exit 1
+          fi
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Publishing version: $VERSION"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Update package version
+        run: |
+          VERSION=${{ steps.tag-version.outputs.version }}
+          # Update trading-data-client version
+          cd libs/trading-data-client
+          npm version $VERSION --no-git-tag-version --allow-same-version
+
+      - name: Run tests
+        run: npx nx test trading-data-client
+
+      - name: Build library
+        run: npx nx build trading-data-client
+
+      - name: Publish to NPM
+        run: |
+          cd libs/trading-data-client
+          npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const version = '${{ steps.tag-version.outputs.version }}';
+            const tagName = '${{ steps.tag-version.outputs.tag_name }}';
+            
+            try {
+              await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: tagName,
+                name: `trading-data-client v${version}`,
+                body: `## trading-data-client v${version}\n\nPublished to NPM: https://www.npmjs.com/package/@lc-trading-services/trading-data-client/v/${version}\n\n### Installation\n\`\`\`bash\nnpm install @lc-trading-services/trading-data-client@${version}\n\`\`\`\n\n### What's Changed\n\nSee the [commit history](https://github.com/${context.repo.owner}/${context.repo.repo}/commits/${tagName}) for details.`,
+                draft: false,
+                prerelease: version.includes('-') || version.includes('alpha') || version.includes('beta')
+              });
+              console.log(`Created release for ${tagName}`);
+            } catch (error) {
+              console.error('Error creating release:', error.message);
+            }
+
+      - name: Summary
+        run: |
+          VERSION=${{ steps.tag-version.outputs.version }}
+          echo "## ✅ Successfully published trading-data-client v${VERSION}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📦 Package: [@lc-trading-services/trading-data-client](https://www.npmjs.com/package/@lc-trading-services/trading-data-client)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🏷️ Tag: \`${{ steps.tag-version.outputs.tag_name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Installation" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "npm install @lc-trading-services/trading-data-client@${VERSION}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
