@@ -42,10 +42,12 @@ node examples/forex-example.js
 ### forex-example.ts
 
 Demonstrates how to:
-- Fetch current quotes for Forex pairs (EUR/USD, GBP/USD, etc.)
+- Fetch current quotes for Forex pairs using user-friendly formats (EUR/USD, GBP/USD, etc.)
 - Retrieve historical OHLCV data
 - Handle multiple currency pairs
 - Work with different time intervals
+
+**Note:** This example uses the user-friendly format `EUR/USD` instead of the Yahoo Finance-specific `EURUSD=X` format. The client automatically handles the conversion.
 
 ### stock-example.ts
 

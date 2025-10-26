@@ -56,7 +56,7 @@ async function main() {
 
     console.log('Fetching EUR/USD 1-hour data for the last 30 days...');
     const data1h = await client.getHistoricalData({
-      symbol: 'EURUSD=X',
+      symbol: 'EUR/USD',
       startDate,
       endDate,
       interval: '1h',

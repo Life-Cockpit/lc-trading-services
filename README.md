@@ -67,7 +67,7 @@ A concrete implementation of the `ITradingDataProvider` interface using Yahoo Fi
 - Type-safe API based on the interface definitions
 
 **Supported Assets:**
-- Forex pairs (e.g., `EURUSD=X`)
+- Forex pairs (e.g., `EURUSD`, `EUR/USD`)
 - Stocks (e.g., `AAPL`, `MSFT`)
 - ETFs and indices
 - Cryptocurrencies (e.g., `BTC-USD`)
@@ -134,8 +134,8 @@ import { TradingDataClient } from '@lc-trading-services/trading-data-client';
 // Create a client instance
 const client = new TradingDataClient();
 
-// Get current quote for EUR/USD
-const quote = await client.getQuote('EURUSD=X');
+// Get current quote for EUR/USD (supports multiple formats)
+const quote = await client.getQuote('EUR/USD');  // or 'EURUSD'
 console.log(`EUR/USD: ${quote.price}`);
 
 // Get historical data
