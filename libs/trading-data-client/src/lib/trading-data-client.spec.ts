@@ -1,35 +1,26 @@
 import { TradingDataClient } from './trading-data-client';
-
-// Mock the client modules
-jest.mock('./market-data-client');
-jest.mock('./news-client');
-
-import { MarketDataClient } from './market-data-client';
-import { NewsClient } from './news-client';
+import type { IMarketDataProvider } from './interfaces/market-data-provider.interface.js';
+import type { INewsProvider } from './interfaces/news-provider.interface.js';
 
 describe('TradingDataClient', () => {
   let client: TradingDataClient;
-  let mockMarketDataClient: jest.Mocked<MarketDataClient>;
-  let mockNewsClient: jest.Mocked<NewsClient>;
+  let mockMarketDataProvider: jest.Mocked<IMarketDataProvider>;
+  let mockNewsProvider: jest.Mocked<INewsProvider>;
 
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Create mock instances
-    mockMarketDataClient = {
+    // Create mock providers
+    mockMarketDataProvider = {
       getHistoricalData: jest.fn(),
       getQuote: jest.fn(),
-    } as any;
+    };
 
-    mockNewsClient = {
+    mockNewsProvider = {
       getNews: jest.fn(),
-    } as any;
+    };
 
-    // Mock the constructors to return our mocks
-    (MarketDataClient as jest.Mock).mockImplementation(() => mockMarketDataClient);
-    (NewsClient as jest.Mock).mockImplementation(() => mockNewsClient);
-
-    client = new TradingDataClient();
+    client = new TradingDataClient(mockMarketDataProvider, mockNewsProvider);
   });
 
   describe('constructor', () => {
@@ -37,9 +28,13 @@ describe('TradingDataClient', () => {
       expect(client).toBeInstanceOf(TradingDataClient);
     });
 
-    it('should initialize MarketDataClient and NewsClient', () => {
-      expect(MarketDataClient).toHaveBeenCalledTimes(1);
-      expect(NewsClient).toHaveBeenCalledTimes(1);
+    it('should accept injected providers', () => {
+      expect(client).toBeDefined();
+    });
+
+    it('should use default providers when none are provided', () => {
+      const defaultClient = new TradingDataClient();
+      expect(defaultClient).toBeInstanceOf(TradingDataClient);
     });
   });
 
@@ -63,11 +58,11 @@ describe('TradingDataClient', () => {
         },
       ];
 
-      mockMarketDataClient.getHistoricalData.mockResolvedValue(mockData);
+      mockMarketDataProvider.getHistoricalData.mockResolvedValue(mockData);
 
       const result = await client.getHistoricalData(params);
 
-      expect(mockMarketDataClient.getHistoricalData).toHaveBeenCalledWith(params);
+      expect(mockMarketDataProvider.getHistoricalData).toHaveBeenCalledWith(params);
       expect(result).toBe(mockData);
     });
   });
@@ -81,11 +76,11 @@ describe('TradingDataClient', () => {
         timestamp: new Date(),
       };
 
-      mockMarketDataClient.getQuote.mockResolvedValue(mockQuote);
+      mockMarketDataProvider.getQuote.mockResolvedValue(mockQuote);
 
       const result = await client.getQuote(symbol);
 
-      expect(mockMarketDataClient.getQuote).toHaveBeenCalledWith(symbol);
+      expect(mockMarketDataProvider.getQuote).toHaveBeenCalledWith(symbol);
       expect(result).toBe(mockQuote);
     });
   });
@@ -108,11 +103,11 @@ describe('TradingDataClient', () => {
         },
       ];
 
-      mockNewsClient.getNews.mockResolvedValue(mockNews);
+      mockNewsProvider.getNews.mockResolvedValue(mockNews);
 
       const result = await client.getNews(params);
 
-      expect(mockNewsClient.getNews).toHaveBeenCalledWith(params);
+      expect(mockNewsProvider.getNews).toHaveBeenCalledWith(params);
       expect(result).toBe(mockNews);
     });
   });

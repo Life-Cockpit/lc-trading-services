@@ -1,23 +1,21 @@
 import { NewsClient } from './news-client';
-import type { NewsData } from './types/index.js';
-
-// Mock yahoo-finance2
-const mockSearchFn = jest.fn();
-
-const createMockYahooFinance = () => ({
-  search: mockSearchFn,
-  chart: jest.fn(),
-  quote: jest.fn(),
-});
+import type { IDataSourceAdapter } from './interfaces/data-source-adapter.interface.js';
 
 describe('NewsClient', () => {
   let client: NewsClient;
-  let mockYahooFinance: ReturnType<typeof createMockYahooFinance>;
+  let mockDataSource: jest.Mocked<IDataSourceAdapter>;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockYahooFinance = createMockYahooFinance();
-    client = new NewsClient(mockYahooFinance as any);
+    
+    // Create mock data source
+    mockDataSource = {
+      search: jest.fn(),
+      chart: jest.fn(),
+      quote: jest.fn(),
+    };
+
+    client = new NewsClient(mockDataSource);
   });
 
   describe('getNews', () => {
@@ -72,7 +70,7 @@ describe('NewsClient', () => {
         timeTakenForSearchLists: 0,
       };
 
-      mockSearchFn.mockResolvedValue(mockSearchResult);
+      mockDataSource.search.mockResolvedValue(mockSearchResult);
 
       const result = await client.getNews({ query: 'AAPL' });
 
@@ -97,29 +95,29 @@ describe('NewsClient', () => {
     });
 
     it('should use default count when not specified', async () => {
-      mockSearchFn.mockResolvedValue({ news: [], quotes: [] });
+      mockDataSource.search.mockResolvedValue({ news: [], quotes: [] });
 
       await client.getNews({ query: 'AAPL' });
 
-      expect(mockSearchFn).toHaveBeenCalledWith('AAPL', {
+      expect(mockDataSource.search).toHaveBeenCalledWith('AAPL', {
         newsCount: 10,
         quotesCount: 0,
       });
     });
 
     it('should use custom count when specified', async () => {
-      mockSearchFn.mockResolvedValue({ news: [], quotes: [] });
+      mockDataSource.search.mockResolvedValue({ news: [], quotes: [] });
 
       await client.getNews({ query: 'TSLA', count: 20 });
 
-      expect(mockSearchFn).toHaveBeenCalledWith('TSLA', {
+      expect(mockDataSource.search).toHaveBeenCalledWith('TSLA', {
         newsCount: 20,
         quotesCount: 0,
       });
     });
 
     it('should return empty array when no news available', async () => {
-      mockSearchFn.mockResolvedValue({ news: [], quotes: [] });
+      mockDataSource.search.mockResolvedValue({ news: [], quotes: [] });
 
       const result = await client.getNews({ query: 'INVALID' });
 
@@ -127,7 +125,7 @@ describe('NewsClient', () => {
     });
 
     it('should handle missing news property', async () => {
-      mockSearchFn.mockResolvedValue({ quotes: [] });
+      mockDataSource.search.mockResolvedValue({ quotes: [] });
 
       const result = await client.getNews({ query: 'TEST' });
 
@@ -136,7 +134,7 @@ describe('NewsClient', () => {
 
     it('should throw error when search API fails', async () => {
       const errorMessage = 'API Error';
-      mockSearchFn.mockRejectedValue(new Error(errorMessage));
+      mockDataSource.search.mockRejectedValue(new Error(errorMessage));
 
       await expect(
         client.getNews({ query: 'INVALID' })
@@ -144,33 +142,33 @@ describe('NewsClient', () => {
     });
 
     it('should normalize forex symbols', async () => {
-      mockSearchFn.mockResolvedValue({ news: [], quotes: [] });
+      mockDataSource.search.mockResolvedValue({ news: [], quotes: [] });
 
       await client.getNews({ query: 'EURUSD' });
 
-      expect(mockSearchFn).toHaveBeenCalledWith('EURUSD=X', {
+      expect(mockDataSource.search).toHaveBeenCalledWith('EURUSD=X', {
         newsCount: 10,
         quotesCount: 0,
       });
     });
 
     it('should normalize forex symbols with slash', async () => {
-      mockSearchFn.mockResolvedValue({ news: [], quotes: [] });
+      mockDataSource.search.mockResolvedValue({ news: [], quotes: [] });
 
       await client.getNews({ query: 'EUR/USD' });
 
-      expect(mockSearchFn).toHaveBeenCalledWith('EURUSD=X', {
+      expect(mockDataSource.search).toHaveBeenCalledWith('EURUSD=X', {
         newsCount: 10,
         quotesCount: 0,
       });
     });
 
     it('should not modify stock symbols', async () => {
-      mockSearchFn.mockResolvedValue({ news: [], quotes: [] });
+      mockDataSource.search.mockResolvedValue({ news: [], quotes: [] });
 
       await client.getNews({ query: 'AAPL' });
 
-      expect(mockSearchFn).toHaveBeenCalledWith('AAPL', {
+      expect(mockDataSource.search).toHaveBeenCalledWith('AAPL', {
         newsCount: 10,
         quotesCount: 0,
       });
@@ -191,7 +189,7 @@ describe('NewsClient', () => {
         quotes: [],
       };
 
-      mockSearchFn.mockResolvedValue(mockSearchResult);
+      mockDataSource.search.mockResolvedValue(mockSearchResult);
 
       const result = await client.getNews({ query: 'AAPL' });
 
@@ -231,7 +229,7 @@ describe('NewsClient', () => {
         quotes: [],
       };
 
-      mockSearchFn.mockResolvedValue(mockSearchResult);
+      mockDataSource.search.mockResolvedValue(mockSearchResult);
 
       const result = await client.getNews({ query: 'AAPL' });
 

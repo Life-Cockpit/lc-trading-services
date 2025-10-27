@@ -1,24 +1,21 @@
 import { MarketDataClient } from './market-data-client';
-import type { OHLCVData, QuoteData } from './types/index.js';
-
-// Mock yahoo-finance2
-const mockChartFn = jest.fn();
-const mockQuoteFn = jest.fn();
-
-const createMockYahooFinance = () => ({
-  chart: mockChartFn,
-  quote: mockQuoteFn,
-  search: jest.fn(),
-});
+import type { IDataSourceAdapter } from './interfaces/data-source-adapter.interface.js';
 
 describe('MarketDataClient', () => {
   let client: MarketDataClient;
-  let mockYahooFinance: ReturnType<typeof createMockYahooFinance>;
+  let mockDataSource: jest.Mocked<IDataSourceAdapter>;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockYahooFinance = createMockYahooFinance();
-    client = new MarketDataClient(mockYahooFinance as any);
+    
+    // Create mock data source
+    mockDataSource = {
+      search: jest.fn(),
+      chart: jest.fn(),
+      quote: jest.fn(),
+    };
+
+    client = new MarketDataClient(mockDataSource);
   });
 
   describe('getHistoricalData', () => {
@@ -46,7 +43,7 @@ describe('MarketDataClient', () => {
         ],
       };
 
-      mockChartFn.mockResolvedValue(mockChartData);
+      mockDataSource.chart.mockResolvedValue(mockChartData);
 
       const result = await client.getHistoricalData({
         symbol: 'EURUSD=X',
@@ -68,7 +65,7 @@ describe('MarketDataClient', () => {
     });
 
     it('should return empty array when no quotes available', async () => {
-      mockChartFn.mockResolvedValue({ quotes: [] });
+      mockDataSource.chart.mockResolvedValue({ quotes: [] });
 
       const result = await client.getHistoricalData({
         symbol: 'INVALID',
@@ -93,7 +90,7 @@ describe('MarketDataClient', () => {
         ],
       };
 
-      mockChartFn.mockResolvedValue(mockChartData);
+      mockDataSource.chart.mockResolvedValue(mockChartData);
 
       const result = await client.getHistoricalData({
         symbol: 'TEST',
@@ -109,14 +106,14 @@ describe('MarketDataClient', () => {
     });
 
     it('should use default interval when not specified', async () => {
-      mockChartFn.mockResolvedValue({ quotes: [] });
+      mockDataSource.chart.mockResolvedValue({ quotes: [] });
 
       await client.getHistoricalData({
         symbol: 'AAPL',
         startDate: new Date('2024-01-01'),
       });
 
-      expect(mockChartFn).toHaveBeenCalledWith('AAPL', {
+      expect(mockDataSource.chart).toHaveBeenCalledWith('AAPL', {
         period1: expect.any(Date),
         period2: expect.any(Date),
         interval: '1d',
@@ -124,7 +121,7 @@ describe('MarketDataClient', () => {
     });
 
     it('should use endDate when provided', async () => {
-      mockChartFn.mockResolvedValue({ quotes: [] });
+      mockDataSource.chart.mockResolvedValue({ quotes: [] });
 
       const startDate = new Date('2024-01-01');
       const endDate = new Date('2024-01-31');
@@ -136,7 +133,7 @@ describe('MarketDataClient', () => {
         interval: '1d',
       });
 
-      expect(mockChartFn).toHaveBeenCalledWith('AAPL', {
+      expect(mockDataSource.chart).toHaveBeenCalledWith('AAPL', {
         period1: startDate,
         period2: endDate,
         interval: '1d',
@@ -145,7 +142,7 @@ describe('MarketDataClient', () => {
 
     it('should throw error when chart API fails', async () => {
       const errorMessage = 'API Error';
-      mockChartFn.mockRejectedValue(new Error(errorMessage));
+      mockDataSource.chart.mockRejectedValue(new Error(errorMessage));
 
       await expect(
         client.getHistoricalData({
@@ -156,7 +153,7 @@ describe('MarketDataClient', () => {
     });
 
     it('should support different time intervals', async () => {
-      mockChartFn.mockResolvedValue({ quotes: [] });
+      mockDataSource.chart.mockResolvedValue({ quotes: [] });
 
       const intervals: Array<
         '1m' | '2m' | '5m' | '15m' | '30m' | '1h' | '1d' | '1wk' | '1mo'
@@ -169,7 +166,7 @@ describe('MarketDataClient', () => {
           interval,
         });
 
-        expect(mockChartFn).toHaveBeenCalledWith(
+        expect(mockDataSource.chart).toHaveBeenCalledWith(
           'AAPL',
           expect.objectContaining({
             interval,
@@ -179,42 +176,42 @@ describe('MarketDataClient', () => {
     });
 
     it('should normalize simple forex format (EURUSD) for historical data', async () => {
-      mockChartFn.mockResolvedValue({ quotes: [] });
+      mockDataSource.chart.mockResolvedValue({ quotes: [] });
 
       await client.getHistoricalData({
         symbol: 'EURUSD',
         startDate: new Date('2024-01-01'),
       });
 
-      expect(mockChartFn).toHaveBeenCalledWith(
+      expect(mockDataSource.chart).toHaveBeenCalledWith(
         'EURUSD=X',
         expect.any(Object)
       );
     });
 
     it('should normalize forex format with slash (EUR/USD) for historical data', async () => {
-      mockChartFn.mockResolvedValue({ quotes: [] });
+      mockDataSource.chart.mockResolvedValue({ quotes: [] });
 
       await client.getHistoricalData({
         symbol: 'EUR/USD',
         startDate: new Date('2024-01-01'),
       });
 
-      expect(mockChartFn).toHaveBeenCalledWith(
+      expect(mockDataSource.chart).toHaveBeenCalledWith(
         'EURUSD=X',
         expect.any(Object)
       );
     });
 
     it('should not modify stock symbols for historical data', async () => {
-      mockChartFn.mockResolvedValue({ quotes: [] });
+      mockDataSource.chart.mockResolvedValue({ quotes: [] });
 
       await client.getHistoricalData({
         symbol: 'AAPL',
         startDate: new Date('2024-01-01'),
       });
 
-      expect(mockChartFn).toHaveBeenCalledWith(
+      expect(mockDataSource.chart).toHaveBeenCalledWith(
         'AAPL',
         expect.any(Object)
       );
@@ -235,7 +232,7 @@ describe('MarketDataClient', () => {
         regularMarketTime: new Date('2024-01-01T12:00:00Z'),
       };
 
-      mockQuoteFn.mockResolvedValue(mockQuote);
+      mockDataSource.quote.mockResolvedValue(mockQuote);
 
       const result = await client.getQuote('EURUSD=X');
 
@@ -258,7 +255,7 @@ describe('MarketDataClient', () => {
         regularMarketTime: new Date(),
       };
 
-      mockQuoteFn.mockResolvedValue(mockQuote);
+      mockDataSource.quote.mockResolvedValue(mockQuote);
 
       const result = await client.getQuote('TEST');
 
@@ -272,7 +269,7 @@ describe('MarketDataClient', () => {
         regularMarketTime: new Date(),
       };
 
-      mockQuoteFn.mockResolvedValue(mockQuote);
+      mockDataSource.quote.mockResolvedValue(mockQuote);
 
       const result = await client.getQuote('TEST');
 
@@ -289,7 +286,7 @@ describe('MarketDataClient', () => {
         regularMarketTime: null,
       };
 
-      mockQuoteFn.mockResolvedValue(mockQuote);
+      mockDataSource.quote.mockResolvedValue(mockQuote);
 
       const result = await client.getQuote('TEST');
 
@@ -297,7 +294,7 @@ describe('MarketDataClient', () => {
     });
 
     it('should throw error when quote is null', async () => {
-      mockQuoteFn.mockResolvedValue(null);
+      mockDataSource.quote.mockResolvedValue(null);
 
       await expect(client.getQuote('INVALID')).rejects.toThrow(
         'No quote data found for INVALID'
@@ -306,7 +303,7 @@ describe('MarketDataClient', () => {
 
     it('should throw error when quote API fails', async () => {
       const errorMessage = 'API Error';
-      mockQuoteFn.mockRejectedValue(new Error(errorMessage));
+      mockDataSource.quote.mockRejectedValue(new Error(errorMessage));
 
       await expect(client.getQuote('INVALID')).rejects.toThrow(
         'Failed to fetch quote for INVALID'
@@ -323,12 +320,12 @@ describe('MarketDataClient', () => {
           regularMarketTime: new Date(),
         };
 
-        mockQuoteFn.mockResolvedValue(mockQuote);
+        mockDataSource.quote.mockResolvedValue(mockQuote);
 
         const result = await client.getQuote(symbol);
 
         expect(result.symbol).toBe(symbol);
-        expect(mockQuoteFn).toHaveBeenCalledWith(symbol);
+        expect(mockDataSource.quote).toHaveBeenCalledWith(symbol);
       }
     });
 
@@ -339,12 +336,12 @@ describe('MarketDataClient', () => {
         regularMarketTime: new Date(),
       };
 
-      mockQuoteFn.mockResolvedValue(mockQuote);
+      mockDataSource.quote.mockResolvedValue(mockQuote);
 
       const result = await client.getQuote('EURUSD');
 
       expect(result.symbol).toBe('EURUSD=X');
-      expect(mockQuoteFn).toHaveBeenCalledWith('EURUSD=X');
+      expect(mockDataSource.quote).toHaveBeenCalledWith('EURUSD=X');
     });
 
     it('should normalize forex format with slash (EUR/USD) to Yahoo Finance format', async () => {
@@ -354,12 +351,12 @@ describe('MarketDataClient', () => {
         regularMarketTime: new Date(),
       };
 
-      mockQuoteFn.mockResolvedValue(mockQuote);
+      mockDataSource.quote.mockResolvedValue(mockQuote);
 
       const result = await client.getQuote('EUR/USD');
 
       expect(result.symbol).toBe('EURUSD=X');
-      expect(mockQuoteFn).toHaveBeenCalledWith('EURUSD=X');
+      expect(mockDataSource.quote).toHaveBeenCalledWith('EURUSD=X');
     });
 
     it('should not modify stock symbols', async () => {
@@ -369,12 +366,12 @@ describe('MarketDataClient', () => {
         regularMarketTime: new Date(),
       };
 
-      mockQuoteFn.mockResolvedValue(mockQuote);
+      mockDataSource.quote.mockResolvedValue(mockQuote);
 
       const result = await client.getQuote('AAPL');
 
       expect(result.symbol).toBe('AAPL');
-      expect(mockQuoteFn).toHaveBeenCalledWith('AAPL');
+      expect(mockDataSource.quote).toHaveBeenCalledWith('AAPL');
     });
   });
 });

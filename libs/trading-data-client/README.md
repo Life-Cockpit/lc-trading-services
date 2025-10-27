@@ -1,6 +1,6 @@
 # trading-data-client
 
-A Yahoo Finance-based implementation of the trading data provider interface for fetching asset data including Forex, stocks, and other financial instruments.
+A modular, SOLID-compliant trading data provider library for fetching asset data including Forex, stocks, and other financial instruments. Built with Yahoo Finance integration and designed for extensibility.
 
 ## Installation
 
@@ -18,16 +18,32 @@ npm install /path/to/lc-trading-services/libs/trading-data-client
 This package depends on:
 - `yahoo-finance2` - Yahoo Finance API client
 
+## Architecture
+
+This library follows **SOLID principles** for maintainability, testability, and extensibility. See [SOLID.md](./SOLID.md) for detailed explanation.
+
+### Key Components
+
+- **Interfaces** (Dependency Inversion Principle)
+  - `ITradingDataProvider` - Main provider interface
+  - `IMarketDataProvider` - Market data operations
+  - `INewsProvider` - News operations
+  - `IDataSourceAdapter` - Data source abstraction
+
+- **Implementations**
+  - `TradingDataClient` - Main facade (default Yahoo Finance)
+  - `MarketDataClient` - Market data implementation
+  - `NewsClient` - News implementation
+  - `YahooFinanceAdapter` - Yahoo Finance adapter
+
 ## Key Exports
 
 - `TradingDataClient` - Main client class for accessing trading data
-- `ITradingDataProvider` - Interface for data providers
-- `OHLCVData` - Open, High, Low, Close, Volume data structure
-- `QuoteData` - Real-time quote information
-- `NewsData` - News article data structure
-- `HistoricalDataParams` - Parameters for historical data requests
-- `NewsParams` - Parameters for news requests
-- `TimeInterval` - Supported time intervals (1m, 2m, 5m, 15m, 30m, 1h, 1d, 1wk, 1mo)
+- `MarketDataClient` - Client for market data only
+- `NewsClient` - Client for news only
+- `YahooFinanceAdapter` - Yahoo Finance data source adapter
+- Interfaces: `ITradingDataProvider`, `IMarketDataProvider`, `INewsProvider`, `IDataSourceAdapter`
+- Types: `OHLCVData`, `QuoteData`, `NewsData`, `HistoricalDataParams`, `NewsParams`, `TimeInterval`
 
 ## Features
 
@@ -40,6 +56,10 @@ This package depends on:
 - ✅ Type-safe implementation using TypeScript
 - ✅ Automatic symbol normalization to Yahoo Finance format
 - ✅ Robust error handling
+- ✅ **SOLID principles** - Maintainable and extensible architecture
+- ✅ **Dependency Injection** - Full control over dependencies
+- ✅ **Interface-based design** - Easy to mock and test
+- ✅ **Modular** - Use individual clients or the unified facade
 
 ## Supported Assets
 
@@ -50,10 +70,12 @@ This package depends on:
 
 ## Quick Start Guide
 
+### Basic Usage (Default Configuration)
+
 ```typescript
 import { TradingDataClient } from '@lc-trading-services/trading-data-client';
 
-// Create client
+// Create client with default Yahoo Finance provider
 const client = new TradingDataClient();
 
 // Get real-time quote
@@ -74,6 +96,45 @@ const news = await client.getNews({
   count: 5
 });
 console.log('Latest news:', news[0].title);
+```
+
+### Advanced Usage (Custom Providers - SOLID)
+
+```typescript
+import {
+  TradingDataClient,
+  MarketDataClient,
+  NewsClient,
+  YahooFinanceAdapter,
+} from '@lc-trading-services/trading-data-client';
+
+// Create a shared data source adapter
+const yahooAdapter = new YahooFinanceAdapter();
+
+// Create individual providers with dependency injection
+const marketData = new MarketDataClient(yahooAdapter);
+const news = new NewsClient(yahooAdapter);
+
+// Inject dependencies into the main client
+const client = new TradingDataClient(marketData, news);
+
+// Use as normal
+const quote = await client.getQuote('AAPL');
+```
+
+### Using Individual Clients
+
+```typescript
+import {
+  NewsClient,
+  YahooFinanceAdapter,
+} from '@lc-trading-services/trading-data-client';
+
+// Use only news functionality
+const adapter = new YahooFinanceAdapter();
+const newsClient = new NewsClient(adapter);
+
+const news = await newsClient.getNews({ query: 'AAPL', count: 5 });
 ```
 
 **Supported Intervals:** `1m`, `2m`, `5m`, `15m`, `30m`, `1h`, `1d`, `1wk`, `1mo`

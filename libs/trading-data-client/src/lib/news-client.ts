@@ -1,15 +1,26 @@
-import YahooFinance from 'yahoo-finance2';
 import type { NewsParams, NewsData } from './types/index.js';
+import type { INewsProvider } from './interfaces/news-provider.interface.js';
+import type { IDataSourceAdapter } from './interfaces/data-source-adapter.interface.js';
 import { normalizeSymbol } from './symbol-normalizer.js';
 
 /**
- * Client for fetching news articles from Yahoo Finance
+ * Client for fetching news articles
+ * Follows SOLID principles:
+ * - Single Responsibility: Only handles news fetching
+ * - Open/Closed: Can work with any IDataSourceAdapter implementation
+ * - Liskov Substitution: Implements INewsProvider interface
+ * - Interface Segregation: Uses focused IDataSourceAdapter interface
+ * - Dependency Inversion: Depends on IDataSourceAdapter abstraction, not concrete implementation
  */
-export class NewsClient {
-  private yahooFinance: InstanceType<typeof YahooFinance>;
+export class NewsClient implements INewsProvider {
+  private dataSource: IDataSourceAdapter;
 
-  constructor(yahooFinance: InstanceType<typeof YahooFinance>) {
-    this.yahooFinance = yahooFinance;
+  /**
+   * Constructor with dependency injection
+   * @param dataSource - Data source adapter (e.g., YahooFinanceAdapter)
+   */
+  constructor(dataSource: IDataSourceAdapter) {
+    this.dataSource = dataSource;
   }
 
   /**
@@ -24,7 +35,7 @@ export class NewsClient {
     const normalizedQuery = normalizeSymbol(query);
 
     try {
-      const searchResult = await this.yahooFinance.search(normalizedQuery, {
+      const searchResult = await this.dataSource.search(normalizedQuery, {
         newsCount: count,
         quotesCount: 0, // We only want news, not quotes
       });
@@ -33,7 +44,7 @@ export class NewsClient {
         return [];
       }
 
-      return searchResult.news.map((article) => ({
+      return searchResult.news.map((article: any) => ({
         uuid: article.uuid,
         title: article.title,
         publisher: article.publisher,

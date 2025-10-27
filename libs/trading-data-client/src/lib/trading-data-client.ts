@@ -1,4 +1,3 @@
-import YahooFinance from 'yahoo-finance2';
 import type {
   ITradingDataProvider,
   HistoricalDataParams,
@@ -7,24 +6,49 @@ import type {
   NewsParams,
   NewsData,
 } from './types/index.js';
+import type { IMarketDataProvider } from './interfaces/market-data-provider.interface.js';
+import type { INewsProvider } from './interfaces/news-provider.interface.js';
 import { MarketDataClient } from './market-data-client.js';
 import { NewsClient } from './news-client.js';
+import { YahooFinanceAdapter } from './adapters/yahoo-finance.adapter.js';
 
 /**
  * Trading data client implementing the ITradingDataProvider interface
- * Uses Yahoo Finance as the data source
+ * Follows SOLID principles:
+ * - Single Responsibility: Coordinates market data and news providers
+ * - Open/Closed: Open for extension (can accept any providers), closed for modification
+ * - Liskov Substitution: Can be replaced with any ITradingDataProvider implementation
+ * - Interface Segregation: Depends on focused IMarketDataProvider and INewsProvider interfaces
+ * - Dependency Inversion: Depends on abstractions (interfaces), not concrete implementations
  * 
- * This is a facade that composes MarketDataClient and NewsClient to provide
+ * This is a facade that composes IMarketDataProvider and INewsProvider to provide
  * a unified interface for accessing trading data and news.
  */
 export class TradingDataClient implements ITradingDataProvider {
-  private marketDataClient: MarketDataClient;
-  private newsClient: NewsClient;
+  private marketDataProvider: IMarketDataProvider;
+  private newsProvider: INewsProvider;
 
-  constructor() {
-    const yahooFinance = new YahooFinance();
-    this.marketDataClient = new MarketDataClient(yahooFinance);
-    this.newsClient = new NewsClient(yahooFinance);
+  /**
+   * Constructor with optional dependency injection
+   * If no providers are supplied, defaults to Yahoo Finance-based implementations
+   * This follows the Dependency Inversion Principle while maintaining ease of use
+   * 
+   * @param marketDataProvider - Provider for market data (optional)
+   * @param newsProvider - Provider for news data (optional)
+   */
+  constructor(
+    marketDataProvider?: IMarketDataProvider,
+    newsProvider?: INewsProvider
+  ) {
+    // Default to Yahoo Finance if no providers specified
+    if (!marketDataProvider || !newsProvider) {
+      const dataSource = new YahooFinanceAdapter();
+      this.marketDataProvider = marketDataProvider || new MarketDataClient(dataSource);
+      this.newsProvider = newsProvider || new NewsClient(dataSource);
+    } else {
+      this.marketDataProvider = marketDataProvider;
+      this.newsProvider = newsProvider;
+    }
   }
 
   /**
@@ -33,7 +57,7 @@ export class TradingDataClient implements ITradingDataProvider {
    * @returns Promise resolving to array of OHLCV data points
    */
   async getHistoricalData(params: HistoricalDataParams): Promise<OHLCVData[]> {
-    return this.marketDataClient.getHistoricalData(params);
+    return this.marketDataProvider.getHistoricalData(params);
   }
 
   /**
@@ -42,7 +66,7 @@ export class TradingDataClient implements ITradingDataProvider {
    * @returns Promise resolving to quote data
    */
   async getQuote(symbol: string): Promise<QuoteData> {
-    return this.marketDataClient.getQuote(symbol);
+    return this.marketDataProvider.getQuote(symbol);
   }
 
   /**
@@ -51,6 +75,6 @@ export class TradingDataClient implements ITradingDataProvider {
    * @returns Promise resolving to array of news articles
    */
   async getNews(params: NewsParams): Promise<NewsData[]> {
-    return this.newsClient.getNews(params);
+    return this.newsProvider.getNews(params);
   }
 }
