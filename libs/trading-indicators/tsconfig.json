@@ -4,6 +4,9 @@
   "include": [],
   "references": [
     {
+      "path": "../trading-data-client"
+    },
+    {
       "path": "./tsconfig.lib.json"
     }
   ]
