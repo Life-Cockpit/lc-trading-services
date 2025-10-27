@@ -248,4 +248,16 @@ describe('NewsClient', () => {
       });
     });
   });
+
+  describe('constructor', () => {
+    it('should create an instance with default adapter when no parameter provided', () => {
+      const defaultClient = new NewsClient();
+      expect(defaultClient).toBeInstanceOf(NewsClient);
+    });
+
+    it('should create an instance with custom adapter when provided', () => {
+      const customClient = new NewsClient(mockDataSource);
+      expect(customClient).toBeInstanceOf(NewsClient);
+    });
+  });
 });

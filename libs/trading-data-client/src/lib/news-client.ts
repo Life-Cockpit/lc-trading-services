@@ -2,6 +2,7 @@ import type { NewsParams, NewsData } from './types/index.js';
 import type { INewsProvider } from './interfaces/news-provider.interface.js';
 import type { IDataSourceAdapter } from './interfaces/data-source-adapter.interface.js';
 import { normalizeSymbol } from './symbol-normalizer.js';
+import { YahooFinanceAdapter } from './adapters/yahoo-finance.adapter.js';
 
 /**
  * Client for fetching news articles
@@ -16,11 +17,20 @@ export class NewsClient implements INewsProvider {
   private dataSource: IDataSourceAdapter;
 
   /**
-   * Constructor with dependency injection
-   * @param dataSource - Data source adapter (e.g., YahooFinanceAdapter)
+   * Constructor with optional dependency injection
+   * @param dataSource - Optional data source adapter (defaults to YahooFinanceAdapter)
+   * 
+   * @example
+   * // Simple usage with defaults
+   * const client = new NewsClient();
+   * 
+   * @example
+   * // Advanced usage with custom adapter
+   * const adapter = new YahooFinanceAdapter();
+   * const client = new NewsClient(adapter);
    */
-  constructor(dataSource: IDataSourceAdapter) {
-    this.dataSource = dataSource;
+  constructor(dataSource?: IDataSourceAdapter) {
+    this.dataSource = dataSource || new YahooFinanceAdapter();
   }
 
   /**
