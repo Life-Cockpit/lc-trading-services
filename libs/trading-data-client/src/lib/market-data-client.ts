@@ -7,6 +7,7 @@ import type {
 import type { IMarketDataProvider } from './interfaces/market-data-provider.interface.js';
 import type { IDataSourceAdapter } from './interfaces/data-source-adapter.interface.js';
 import { normalizeSymbol } from './symbol-normalizer.js';
+import { YahooFinanceAdapter } from './adapters/yahoo-finance.adapter.js';
 
 /**
  * Client for fetching market data (historical data and quotes)
@@ -21,11 +22,20 @@ export class MarketDataClient implements IMarketDataProvider {
   private dataSource: IDataSourceAdapter;
 
   /**
-   * Constructor with dependency injection
-   * @param dataSource - Data source adapter (e.g., YahooFinanceAdapter)
+   * Constructor with optional dependency injection
+   * @param dataSource - Optional data source adapter (defaults to YahooFinanceAdapter)
+   * 
+   * @example
+   * // Simple usage with defaults
+   * const client = new MarketDataClient();
+   * 
+   * @example
+   * // Advanced usage with custom adapter
+   * const adapter = new YahooFinanceAdapter();
+   * const client = new MarketDataClient(adapter);
    */
-  constructor(dataSource: IDataSourceAdapter) {
-    this.dataSource = dataSource;
+  constructor(dataSource?: IDataSourceAdapter) {
+    this.dataSource = dataSource || new YahooFinanceAdapter();
   }
 
   /**

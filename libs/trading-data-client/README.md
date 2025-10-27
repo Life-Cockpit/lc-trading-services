@@ -124,13 +124,38 @@ const quote = await client.getQuote('AAPL');
 
 ### Using Individual Clients
 
+The individual clients can now be used completely independently without needing to manually create adapters:
+
+```typescript
+import { NewsClient } from '@lc-trading-services/trading-data-client';
+
+// Simple usage - no adapter needed!
+const newsClient = new NewsClient();
+const news = await newsClient.getNews({ query: 'AAPL', count: 5 });
+```
+
+```typescript
+import { MarketDataClient } from '@lc-trading-services/trading-data-client';
+
+// Simple usage - no adapter needed!
+const marketClient = new MarketDataClient();
+const quote = await marketClient.getQuote('AAPL');
+const data = await marketClient.getHistoricalData({
+  symbol: 'AAPL',
+  startDate: new Date('2024-01-01'),
+  interval: '1d'
+});
+```
+
+For advanced scenarios, you can still provide custom adapters:
+
 ```typescript
 import {
   NewsClient,
   YahooFinanceAdapter,
 } from '@lc-trading-services/trading-data-client';
 
-// Use only news functionality
+// Advanced usage with custom adapter
 const adapter = new YahooFinanceAdapter();
 const newsClient = new NewsClient(adapter);
 

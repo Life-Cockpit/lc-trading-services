@@ -374,4 +374,16 @@ describe('MarketDataClient', () => {
       expect(mockDataSource.quote).toHaveBeenCalledWith('AAPL');
     });
   });
+
+  describe('constructor', () => {
+    it('should create an instance with default adapter when no parameter provided', () => {
+      const defaultClient = new MarketDataClient();
+      expect(defaultClient).toBeInstanceOf(MarketDataClient);
+    });
+
+    it('should create an instance with custom adapter when provided', () => {
+      const customClient = new MarketDataClient(mockDataSource);
+      expect(customClient).toBeInstanceOf(MarketDataClient);
+    });
+  });
 });

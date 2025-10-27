@@ -202,13 +202,34 @@ const client = new TradingDataClient(marketData, news);
 ```
 
 ### Using Individual Clients
+
+Individual clients can be used independently without needing to create adapters:
+
+```typescript
+import { NewsClient } from '@lc-trading-services/trading-data-client';
+
+// Simple independent usage - no adapter needed!
+const newsClient = new NewsClient();
+const news = await newsClient.getNews({ query: 'AAPL', count: 5 });
+```
+
+```typescript
+import { MarketDataClient } from '@lc-trading-services/trading-data-client';
+
+// Simple independent usage - no adapter needed!
+const marketClient = new MarketDataClient();
+const quote = await marketClient.getQuote('AAPL');
+```
+
+For advanced scenarios with custom adapters:
+
 ```typescript
 import {
   NewsClient,
   YahooFinanceAdapter,
 } from '@lc-trading-services/trading-data-client';
 
-// Use only news functionality
+// Advanced usage with custom adapter
 const adapter = new YahooFinanceAdapter();
 const newsClient = new NewsClient(adapter);
 const news = await newsClient.getNews({ query: 'AAPL', count: 5 });
