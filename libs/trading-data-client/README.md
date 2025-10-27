@@ -24,7 +24,9 @@ This package depends on:
 - `ITradingDataProvider` - Interface for data providers
 - `OHLCVData` - Open, High, Low, Close, Volume data structure
 - `QuoteData` - Real-time quote information
+- `NewsData` - News article data structure
 - `HistoricalDataParams` - Parameters for historical data requests
+- `NewsParams` - Parameters for news requests
 - `TimeInterval` - Supported time intervals (1m, 2m, 5m, 15m, 30m, 1h, 1d, 1wk, 1mo)
 
 ## Features
@@ -32,6 +34,7 @@ This package depends on:
 - ✅ Fetch historical OHLCV (Open, High, Low, Close, Volume) data
 - ✅ Support for multiple time intervals (1m, 2m, 5m, 15m, 30m, 1h, 1d, 1wk, 1mo)
 - ✅ Get real-time quote data
+- ✅ Fetch news articles for symbols and search queries
 - ✅ Support for Forex pairs with user-friendly formats (e.g., `EURUSD`, `EUR/USD`)
 - ✅ Support for stocks, ETFs, and other instruments
 - ✅ Type-safe implementation using TypeScript
@@ -64,6 +67,13 @@ const data = await client.getHistoricalData({
   endDate: new Date('2024-01-31'),
   interval: '1d'
 });
+
+// Get news articles
+const news = await client.getNews({
+  query: 'AAPL',
+  count: 5
+});
+console.log('Latest news:', news[0].title);
 ```
 
 **Supported Intervals:** `1m`, `2m`, `5m`, `15m`, `30m`, `1h`, `1d`, `1wk`, `1mo`
@@ -150,6 +160,42 @@ const intradayData = await client.getHistoricalData({
 console.log(`Retrieved ${intradayData.length} 5-minute candles`);
 ```
 
+### News Example
+
+```typescript
+import { TradingDataClient } from '@lc-trading-services/trading-data-client';
+
+const client = new TradingDataClient();
+
+// Get news articles for Apple Inc.
+const appleNews = await client.getNews({
+  query: 'AAPL',
+  count: 10  // Fetch up to 10 articles (default is 10)
+});
+
+appleNews.forEach(article => {
+  console.log(`${article.title}`);
+  console.log(`Publisher: ${article.publisher}`);
+  console.log(`Published: ${article.providerPublishTime.toLocaleString()}`);
+  console.log(`Link: ${article.link}`);
+  
+  if (article.relatedTickers) {
+    console.log(`Related Tickers: ${article.relatedTickers.join(', ')}`);
+  }
+  
+  if (article.thumbnail) {
+    console.log(`Thumbnail: ${article.thumbnail.resolutions[0]?.url}`);
+  }
+  console.log('');
+});
+
+// Get news for forex pairs
+const forexNews = await client.getNews({
+  query: 'EUR/USD',
+  count: 5
+});
+```
+
 ## API Reference
 
 ### `TradingDataClient`
@@ -181,6 +227,24 @@ Fetches current quote data for an asset.
 - `symbol` - Asset symbol (supports same formats as getHistoricalData)
 
 **Returns:** Current quote data
+
+##### `getNews(params: NewsParams): Promise<NewsData[]>`
+
+Fetches news articles for a symbol or search query.
+
+**Parameters:**
+- `params.query` - Search query or symbol to get news for (supports same formats as getHistoricalData)
+- `params.count` - Maximum number of news articles to return (optional, defaults to 10)
+
+**Returns:** Array of news articles with the following structure:
+- `uuid` - Unique identifier for the article
+- `title` - Article title
+- `publisher` - Publisher name
+- `link` - URL to the full article
+- `providerPublishTime` - Publication timestamp
+- `type` - Article type (e.g., 'STORY')
+- `thumbnail` - Optional thumbnail with multiple resolutions
+- `relatedTickers` - Optional array of related ticker symbols
 
 ## Supported Symbols
 
