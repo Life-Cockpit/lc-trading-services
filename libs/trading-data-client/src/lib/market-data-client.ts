@@ -11,12 +11,13 @@ import { YahooFinanceAdapter } from './adapters/yahoo-finance.adapter.js';
 
 /**
  * Client for fetching market data (historical data and quotes)
- * Follows SOLID principles:
- * - Single Responsibility: Only handles market data fetching (historical & quotes)
- * - Open/Closed: Can work with any IDataSourceAdapter implementation
- * - Liskov Substitution: Implements IMarketDataProvider interface
- * - Interface Segregation: Uses focused IDataSourceAdapter interface
- * - Dependency Inversion: Depends on IDataSourceAdapter abstraction, not concrete implementation
+ * 
+ * Design principles:
+ * - Only handles market data fetching (single responsibility)
+ * - Can work with any IDataSourceAdapter implementation (extensible)
+ * - Implements IMarketDataProvider interface (substitutable)
+ * - Uses focused IDataSourceAdapter interface
+ * - Depends on IDataSourceAdapter abstraction, not concrete implementation
  */
 export class MarketDataClient implements IMarketDataProvider {
   private dataSource: IDataSourceAdapter;

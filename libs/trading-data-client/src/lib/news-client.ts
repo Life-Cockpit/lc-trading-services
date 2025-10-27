@@ -6,12 +6,13 @@ import { YahooFinanceAdapter } from './adapters/yahoo-finance.adapter.js';
 
 /**
  * Client for fetching news articles
- * Follows SOLID principles:
- * - Single Responsibility: Only handles news fetching
- * - Open/Closed: Can work with any IDataSourceAdapter implementation
- * - Liskov Substitution: Implements INewsProvider interface
- * - Interface Segregation: Uses focused IDataSourceAdapter interface
- * - Dependency Inversion: Depends on IDataSourceAdapter abstraction, not concrete implementation
+ * 
+ * Design principles:
+ * - Only handles news fetching (single responsibility)
+ * - Can work with any IDataSourceAdapter implementation (extensible)
+ * - Implements INewsProvider interface (substitutable)
+ * - Uses focused IDataSourceAdapter interface
+ * - Depends on IDataSourceAdapter abstraction, not concrete implementation
  */
 export class NewsClient implements INewsProvider {
   private dataSource: IDataSourceAdapter;
