@@ -14,12 +14,13 @@ import { YahooFinanceAdapter } from './adapters/yahoo-finance.adapter.js';
 
 /**
  * Trading data client implementing the ITradingDataProvider interface
- * Follows SOLID principles:
- * - Single Responsibility: Coordinates market data and news providers
- * - Open/Closed: Open for extension (can accept any providers), closed for modification
- * - Liskov Substitution: Can be replaced with any ITradingDataProvider implementation
- * - Interface Segregation: Depends on focused IMarketDataProvider and INewsProvider interfaces
- * - Dependency Inversion: Depends on abstractions (interfaces), not concrete implementations
+ * 
+ * Design principles:
+ * - Coordinates market data and news providers (single responsibility)
+ * - Open for extension (can accept any providers), closed for modification
+ * - Can be replaced with any ITradingDataProvider implementation (substitutable)
+ * - Depends on focused IMarketDataProvider and INewsProvider interfaces
+ * - Depends on abstractions (interfaces), not concrete implementations
  * 
  * This is a facade that composes IMarketDataProvider and INewsProvider to provide
  * a unified interface for accessing trading data and news.
@@ -31,7 +32,6 @@ export class TradingDataClient implements ITradingDataProvider {
   /**
    * Constructor with optional dependency injection
    * If no providers are supplied, defaults to Yahoo Finance-based implementations
-   * This follows the Dependency Inversion Principle while maintaining ease of use
    * 
    * @param marketDataProvider - Provider for market data (optional)
    * @param newsProvider - Provider for news data (optional)

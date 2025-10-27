@@ -1,6 +1,6 @@
 # trading-data-client
 
-A modular, SOLID-compliant trading data provider library for fetching asset data including Forex, stocks, and other financial instruments. Built with Yahoo Finance integration and designed for extensibility.
+A modular trading data provider library for fetching asset data including Forex, stocks, and other financial instruments. Built with Yahoo Finance integration and designed for extensibility.
 
 ## Installation
 
@@ -20,11 +20,11 @@ This package depends on:
 
 ## Architecture
 
-This library follows **SOLID principles** for maintainability, testability, and extensibility. See [SOLID.md](./SOLID.md) for detailed explanation.
+This library uses a modular architecture with interface-based design for maintainability, testability, and extensibility.
 
 ### Key Components
 
-- **Interfaces** (Dependency Inversion Principle)
+- **Interfaces**
   - `ITradingDataProvider` - Main provider interface
   - `IMarketDataProvider` - Market data operations
   - `INewsProvider` - News operations
@@ -56,7 +56,7 @@ This library follows **SOLID principles** for maintainability, testability, and 
 - ✅ Type-safe implementation using TypeScript
 - ✅ Automatic symbol normalization to Yahoo Finance format
 - ✅ Robust error handling
-- ✅ **SOLID principles** - Maintainable and extensible architecture
+- ✅ **Maintainable and extensible architecture**
 - ✅ **Dependency Injection** - Full control over dependencies
 - ✅ **Interface-based design** - Easy to mock and test
 - ✅ **Modular** - Use individual clients or the unified facade
@@ -98,7 +98,7 @@ const news = await client.getNews({
 console.log('Latest news:', news[0].title);
 ```
 
-### Advanced Usage (Custom Providers - SOLID)
+### Advanced Usage (Custom Providers)
 
 ```typescript
 import {
