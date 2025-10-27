@@ -68,7 +68,7 @@ const data = await client.getHistoricalData({
 
 **Supported Intervals:** `1m`, `2m`, `5m`, `15m`, `30m`, `1h`, `1d`, `1wk`, `1mo`
 
-For more detailed examples, see the examples directory in the repository root.
+For more detailed examples, see the [examples/trading-data-client](../../examples/trading-data-client/) directory in the repository root.
 
 ## Usage
 

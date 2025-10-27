@@ -281,7 +281,7 @@ zones.zones.forEach(zone => {
 });
 ```
 
-For more examples, see the [examples directory](../../examples/) in the repository root.
+For more examples, see the [examples/trading-indicators](../../examples/trading-indicators/) directory in the repository root.
 
 ## License
 

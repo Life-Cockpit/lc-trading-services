@@ -36,13 +36,15 @@ This is an Nx monorepo with the following structure:
 
 ```
 lc-trading-services/
-├── libs/                      # All libraries (publishable modules)
-│   ├── trading-indicators/    # Trading indicators library
-│   └── trading-data-client/   # Yahoo Finance implementation
-├── examples/                  # Usage examples
-├── package.json               # Root package configuration
-├── nx.json                    # Nx workspace configuration
-└── tsconfig.base.json         # Shared TypeScript configuration
+├── libs/                         # All libraries (publishable modules)
+│   ├── trading-indicators/       # Trading indicators library
+│   └── trading-data-client/      # Yahoo Finance implementation
+├── examples/                     # Usage examples
+│   ├── trading-data-client/      # Examples for trading-data-client
+│   └── trading-indicators/       # Examples for trading-indicators
+├── package.json                  # Root package configuration
+├── nx.json                       # Nx workspace configuration
+└── tsconfig.base.json            # Shared TypeScript configuration
 ```
 
 ### Libraries
@@ -122,7 +124,7 @@ Each library is published to the [NPM registry](https://www.npmjs.com/) and can 
 - **[trading-indicators](libs/trading-indicators/README.md)** - Technical analysis indicators (ATR, EMA, Support/Resistance, High/Low)
 - **[trading-data-client](libs/trading-data-client/README.md)** - Yahoo Finance integration for trading data
 
-For usage examples, see the [examples directory](examples/) or refer to individual library documentation.
+For usage examples, see the [examples/trading-data-client](examples/trading-data-client/) and [examples/trading-indicators](examples/trading-indicators/) directories, or refer to individual library documentation.
 
 ## Development Workflow
 
