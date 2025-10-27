@@ -1,20 +1,31 @@
-import YahooFinance from 'yahoo-finance2';
 import type {
   HistoricalDataParams,
   OHLCVData,
   QuoteData,
   TimeInterval,
 } from './types/index.js';
+import type { IMarketDataProvider } from './interfaces/market-data-provider.interface.js';
+import type { IDataSourceAdapter } from './interfaces/data-source-adapter.interface.js';
 import { normalizeSymbol } from './symbol-normalizer.js';
 
 /**
- * Client for fetching market data (historical data and quotes) from Yahoo Finance
+ * Client for fetching market data (historical data and quotes)
+ * Follows SOLID principles:
+ * - Single Responsibility: Only handles market data fetching (historical & quotes)
+ * - Open/Closed: Can work with any IDataSourceAdapter implementation
+ * - Liskov Substitution: Implements IMarketDataProvider interface
+ * - Interface Segregation: Uses focused IDataSourceAdapter interface
+ * - Dependency Inversion: Depends on IDataSourceAdapter abstraction, not concrete implementation
  */
-export class MarketDataClient {
-  private yahooFinance: InstanceType<typeof YahooFinance>;
+export class MarketDataClient implements IMarketDataProvider {
+  private dataSource: IDataSourceAdapter;
 
-  constructor(yahooFinance: InstanceType<typeof YahooFinance>) {
-    this.yahooFinance = yahooFinance;
+  /**
+   * Constructor with dependency injection
+   * @param dataSource - Data source adapter (e.g., YahooFinanceAdapter)
+   */
+  constructor(dataSource: IDataSourceAdapter) {
+    this.dataSource = dataSource;
   }
 
   /**
@@ -36,14 +47,14 @@ export class MarketDataClient {
       };
 
       // Use chart module for full interval support
-      const result = await this.yahooFinance.chart(normalizedSymbol, queryOptions);
+      const result = await this.dataSource.chart(normalizedSymbol, queryOptions);
 
       // Check if result contains quotes
       if (!result.quotes || result.quotes.length === 0) {
         return [];
       }
 
-      return result.quotes.map((item) => ({
+      return result.quotes.map((item: any) => ({
         date: item.date,
         open: item.open ?? 0,
         high: item.high ?? 0,
@@ -69,7 +80,7 @@ export class MarketDataClient {
     const normalizedSymbol = normalizeSymbol(symbol);
 
     try {
-      const quote = await this.yahooFinance.quote(normalizedSymbol);
+      const quote = await this.dataSource.quote(normalizedSymbol);
 
       if (!quote) {
         throw new Error(`No quote data found for ${symbol}`);
