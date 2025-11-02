@@ -14,6 +14,8 @@ export class TrendlineService {
   private static readonly PRICE_SPAN_NORMALIZATION_FACTOR = 10; // Scale factor for small percentages
   
   // Constants for data calculation
+  // Note: Trading hours per day assumes stock market hours (e.g., NYSE: 6.5 hours).
+  // This may differ for other markets (FOREX: 24h, crypto: 24h). Adjust if needed.
   private static readonly TRADING_HOURS_PER_DAY = 6.5;
   private static readonly DAYS_MULTIPLIER = 2; // Safety multiplier for weekends/holidays
 
