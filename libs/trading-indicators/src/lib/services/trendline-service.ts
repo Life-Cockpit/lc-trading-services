@@ -6,6 +6,17 @@ import type { Trendline, TrendlinePoint, TrendlineResult } from '../types/index.
  * Identifies support and resistance trendlines by connecting pivot points
  */
 export class TrendlineService {
+  // Constants for strength calculation
+  private static readonly TIME_SPAN_WEIGHT = 0.4;
+  private static readonly PRICE_SPAN_WEIGHT = 0.3;
+  private static readonly RECENCY_WEIGHT = 0.3;
+  private static readonly TIME_SPAN_NORMALIZATION_FACTOR = 0.5; // 50% of total periods
+  private static readonly PRICE_SPAN_NORMALIZATION_FACTOR = 10; // Scale factor for small percentages
+  
+  // Constants for data calculation
+  private static readonly TRADING_HOURS_PER_DAY = 6.5;
+  private static readonly DAYS_MULTIPLIER = 2; // Safety multiplier for weekends/holidays
+
   constructor(private readonly dataClient: TradingDataClient) {}
 
   /**
@@ -215,34 +226,43 @@ export class TrendlineService {
   ): number {
     // Time span factor (normalized by total periods)
     const timeSpan = point2.index - point1.index;
-    const timeSpanFactor = Math.min(timeSpan / (totalPeriods * 0.5), 1); // Max out at 50% of total periods
+    const timeSpanFactor = Math.min(
+      timeSpan / (totalPeriods * TrendlineService.TIME_SPAN_NORMALIZATION_FACTOR),
+      1
+    );
 
     // Price span factor (normalized percentage change)
     const priceSpan = Math.abs(point2.price - point1.price);
     const avgPrice = (point1.price + point2.price) / 2;
-    const priceSpanFactor = Math.min((priceSpan / avgPrice) * 10, 1); // Scale by 10 to normalize small percentages
+    const priceSpanFactor = Math.min(
+      (priceSpan / avgPrice) * TrendlineService.PRICE_SPAN_NORMALIZATION_FACTOR,
+      1
+    );
 
     // Recency factor (more recent second point = higher strength)
     const recencyFactor = point2.index / totalPeriods;
 
-    // Combined strength with weighted factors:
-    // 40% time span, 30% price span, 30% recency
-    return timeSpanFactor * 0.4 + priceSpanFactor * 0.3 + recencyFactor * 0.3;
+    // Combined strength with weighted factors
+    return (
+      timeSpanFactor * TrendlineService.TIME_SPAN_WEIGHT +
+      priceSpanFactor * TrendlineService.PRICE_SPAN_WEIGHT +
+      recencyFactor * TrendlineService.RECENCY_WEIGHT
+    );
   }
 
   /**
    * Calculate days needed based on interval
    */
   private calculateDaysNeeded(interval: TimeInterval, periods: number): number {
-    const multiplier = 2; // Safety multiplier for weekends/holidays
-    
     switch (interval) {
       case '1h':
-        return Math.ceil((periods / 6.5) * multiplier);
+        return Math.ceil(
+          (periods / TrendlineService.TRADING_HOURS_PER_DAY) * TrendlineService.DAYS_MULTIPLIER
+        );
       case '1d':
-        return periods * multiplier;
+        return periods * TrendlineService.DAYS_MULTIPLIER;
       default:
-        return periods * multiplier;
+        return periods * TrendlineService.DAYS_MULTIPLIER;
     }
   }
 }
