@@ -1,6 +1,6 @@
 # trading-indicators
 
-A comprehensive trading indicators library providing technical analysis tools including support/resistance zones, ATR (Average True Range), EMA (Exponential Moving Average), and high/low calculations.
+A comprehensive trading indicators library providing technical analysis tools including support/resistance zones, trendlines, ATR (Average True Range), EMA (Exponential Moving Average), and high/low calculations.
 
 ## Installation
 
@@ -29,6 +29,7 @@ This package depends on:
 - `AllTimeHighLowService` - All-time high and low calculations
 - `Week52HighLowService` - 52-week high and low calculations
 - `SupportResistanceService` - Support and resistance zone identification
+- `TrendlineService` - Trendline calculations with exact 2 hits
 
 ### Types
 - `ATRResult` - ATR calculation result
@@ -37,16 +38,20 @@ This package depends on:
 - `WeekHighLowResult` - 52-week high/low result
 - `SupportResistanceResult` - Support/resistance zones result
 - `SupportResistanceZone` - Individual support/resistance zone
+- `TrendlineResult` - Trendline calculation result
+- `Trendline` - Individual trendline with exactly 2 points
+- `TrendlinePoint` - Point on a trendline
 
 ## Features
 
 - ✅ **ATR (Average True Range)** - Measure market volatility for 1d and 1h intervals
 - ✅ **EMA (Exponential Moving Average)** - Calculate EMA 9, 20, 50, and 200
 - ✅ **Support and Resistance Zones** - Identify key price levels with frequency tracking
+- ✅ **Trendlines** - Calculate support and resistance trendlines with exactly 2 hits
 - ✅ **All-Time High/Low** - Find historical price extremes
 - ✅ **52-Week High/Low** - Track yearly price ranges
 - ✅ **Type-safe** - Full TypeScript support
-- ✅ **Comprehensive Testing** - 42 test cases covering all services
+- ✅ **Comprehensive Testing** - 52 test cases covering all services
 - ✅ **Flexible API** - Use the main class or individual services
 
 ## Quick Start Guide
@@ -76,6 +81,14 @@ console.log(`52-Week Low: ${week52.low52Week} on ${week52.low52WeekDate}`);
 const zones = await indicators.supportResistance.calculateSupportResistance('AAPL', '1d');
 zones.zones.forEach(zone => {
   console.log(`Zone at ${zone.level}: Support=${zone.supportCount}, Resistance=${zone.resistanceCount}, Strength=${zone.strength}`);
+});
+
+// Calculate trendlines with exactly 2 hits
+const trendlines = await indicators.trendline.calculateTrendlines('AAPL', '1d');
+console.log(`Found ${trendlines.supportTrendlines.length} support trendlines`);
+console.log(`Found ${trendlines.resistanceTrendlines.length} resistance trendlines`);
+trendlines.supportTrendlines.forEach(trendline => {
+  console.log(`Support Trendline: ${trendline.point1.price} -> ${trendline.point2.price}, Slope=${trendline.slope}, Strength=${trendline.strength}`);
 });
 ```
 
@@ -118,6 +131,7 @@ constructor(dataClient?: TradingDataClient)
 - `allTimeHighLow: AllTimeHighLowService` - All-time high/low service
 - `week52HighLow: Week52HighLowService` - 52-week high/low service
 - `supportResistance: SupportResistanceService` - Support/resistance zones service
+- `trendline: TrendlineService` - Trendline calculation service with exact 2 hits
 
 ### ATRService
 
@@ -278,6 +292,61 @@ zones.zones.forEach(zone => {
   console.log(`  Resistance Count: ${zone.resistanceCount}`);
   console.log(`  Total Touches: ${zone.totalTouches}`);
   console.log(`  Strength: ${zone.strength}`);
+});
+```
+
+### TrendlineService
+
+Service for calculating trendlines with exactly 2 hits (2 price points).
+
+#### calculateTrendlines
+
+```typescript
+async calculateTrendlines(
+  symbol: string,
+  interval?: TimeInterval,
+  lookbackPeriods?: number,
+  maxTrendlines?: number
+): Promise<TrendlineResult>
+```
+
+**Parameters:**
+- `symbol` - Asset symbol (e.g., 'EURUSD', 'AAPL')
+- `interval` (optional) - Time interval ('1d' or '1h', default: '1d')
+- `lookbackPeriods` (optional) - Number of periods to analyze (default: 100)
+- `maxTrendlines` (optional) - Maximum number of trendlines to return per type (default: 10)
+
+**Returns:** Promise resolving to TrendlineResult with support and resistance trendlines
+
+**How it works:**
+- Identifies pivot points (local highs and lows) in the price data
+- Connects each pair of pivot points to create trendlines with exactly 2 hits
+- Each trendline contains the slope, intercept, and strength score
+- Returns the strongest trendlines sorted by strength
+
+**Example:**
+```typescript
+const trendlines = await indicators.trendline.calculateTrendlines('AAPL', '1d', 100, 5);
+
+console.log(`Found ${trendlines.supportTrendlines.length} support trendlines`);
+console.log(`Found ${trendlines.resistanceTrendlines.length} resistance trendlines`);
+
+// Display support trendlines
+trendlines.supportTrendlines.forEach((line, index) => {
+  console.log(`Support Trendline ${index + 1}:`);
+  console.log(`  Point 1: ${line.point1.price} at ${line.point1.date}`);
+  console.log(`  Point 2: ${line.point2.price} at ${line.point2.date}`);
+  console.log(`  Slope: ${line.slope}`);
+  console.log(`  Strength: ${line.strength}`);
+});
+
+// Display resistance trendlines
+trendlines.resistanceTrendlines.forEach((line, index) => {
+  console.log(`Resistance Trendline ${index + 1}:`);
+  console.log(`  Point 1: ${line.point1.price} at ${line.point1.date}`);
+  console.log(`  Point 2: ${line.point2.price} at ${line.point2.date}`);
+  console.log(`  Slope: ${line.slope}`);
+  console.log(`  Strength: ${line.strength}`);
 });
 ```
 
