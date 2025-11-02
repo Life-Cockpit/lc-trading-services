@@ -5,6 +5,7 @@ import { EMAService } from './services/ema-service.js';
 import { AllTimeHighLowService } from './services/all-time-high-low-service.js';
 import { Week52HighLowService } from './services/week-52-high-low-service.js';
 import { SupportResistanceService } from './services/support-resistance-service.js';
+import { TrendlineService } from './services/trendline-service.js';
 
 describe('TradingIndicators', () => {
   it('should create instance with default data client', () => {
@@ -16,6 +17,7 @@ describe('TradingIndicators', () => {
     expect(indicators.allTimeHighLow).toBeInstanceOf(AllTimeHighLowService);
     expect(indicators.week52HighLow).toBeInstanceOf(Week52HighLowService);
     expect(indicators.supportResistance).toBeInstanceOf(SupportResistanceService);
+    expect(indicators.trendline).toBeInstanceOf(TrendlineService);
   });
 
   it('should create instance with custom data client', () => {
@@ -28,6 +30,7 @@ describe('TradingIndicators', () => {
     expect(indicators.allTimeHighLow).toBeInstanceOf(AllTimeHighLowService);
     expect(indicators.week52HighLow).toBeInstanceOf(Week52HighLowService);
     expect(indicators.supportResistance).toBeInstanceOf(SupportResistanceService);
+    expect(indicators.trendline).toBeInstanceOf(TrendlineService);
   });
 
   it('should provide access to all indicator services', () => {
@@ -39,5 +42,6 @@ describe('TradingIndicators', () => {
     expect(typeof indicators.allTimeHighLow.calculateAllTimeHighLow).toBe('function');
     expect(typeof indicators.week52HighLow.calculate52WeekHighLow).toBe('function');
     expect(typeof indicators.supportResistance.calculateSupportResistance).toBe('function');
+    expect(typeof indicators.trendline.calculateTrendlines).toBe('function');
   });
 });

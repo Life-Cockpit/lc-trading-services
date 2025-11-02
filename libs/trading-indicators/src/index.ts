@@ -7,6 +7,7 @@ export { EMAService } from './lib/services/ema-service.js';
 export { AllTimeHighLowService } from './lib/services/all-time-high-low-service.js';
 export { Week52HighLowService } from './lib/services/week-52-high-low-service.js';
 export { SupportResistanceService } from './lib/services/support-resistance-service.js';
+export { TrendlineService } from './lib/services/trendline-service.js';
 
 // Types
 export type {
@@ -16,5 +17,8 @@ export type {
   AllTimeHighLowResult,
   WeekHighLowResult,
   EMAResult,
+  Trendline,
+  TrendlinePoint,
+  TrendlineResult,
 } from './lib/types/index.js';
 
