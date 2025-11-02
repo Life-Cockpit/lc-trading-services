@@ -93,3 +93,49 @@ export interface EMAResult {
   /** Calculation timestamp */
   timestamp: Date;
 }
+
+/**
+ * Represents a single trendline connecting exactly 2 price points
+ */
+export interface Trendline {
+  /** Type of trendline */
+  type: 'support' | 'resistance';
+  /** First point on the trendline */
+  point1: TrendlinePoint;
+  /** Second point on the trendline */
+  point2: TrendlinePoint;
+  /** Slope of the trendline (price change per period) */
+  slope: number;
+  /** Y-intercept of the trendline */
+  intercept: number;
+  /** Strength score (0-1) based on price span and time span */
+  strength: number;
+}
+
+/**
+ * Represents a point on a trendline
+ */
+export interface TrendlinePoint {
+  /** Date of the point */
+  date: Date;
+  /** Price at this point */
+  price: number;
+  /** Index in the historical data array */
+  index: number;
+}
+
+/**
+ * Result of trendline calculation
+ */
+export interface TrendlineResult {
+  /** Symbol analyzed */
+  symbol: string;
+  /** Time interval used for analysis */
+  interval: TimeInterval;
+  /** Array of identified support trendlines */
+  supportTrendlines: Trendline[];
+  /** Array of identified resistance trendlines */
+  resistanceTrendlines: Trendline[];
+  /** Calculation timestamp */
+  timestamp: Date;
+}
