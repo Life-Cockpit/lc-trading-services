@@ -11,24 +11,6 @@ This repository contains reusable TypeScript libraries designed to facilitate in
 - 📊 Yahoo Finance integration for real-time and historical data
 - 💱 Support for Forex, stocks, ETFs, and cryptocurrencies
 - ⏱️ Multiple time intervals (1m to 1mo)
-- 📦 Publishable npm packages with independent versioning
-- ✅ Type-safe TypeScript implementation
-- 🧪 Comprehensive test coverage
-
-## Monorepo Architecture
-
-This project uses **Nx with independent versioning** for maximum flexibility:
-
-- **Independent Packages**: Each library and app has its own version number
-- **Selective Publishing**: Publish only the packages that changed
-- **Dedicated Releases**: Each package gets its own git tags and releases
-- **Flexible Deployment**: Deploy packages independently without coordinating versions
-
-This architecture allows teams to:
-- Release breaking changes to one package without affecting others
-- Maintain different release cadences for different packages
-- Publish security fixes to specific packages quickly
-- Keep package versions aligned with semantic versioning principles
 
 ## Project Structure
 
