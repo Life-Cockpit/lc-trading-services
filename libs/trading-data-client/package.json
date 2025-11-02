@@ -1,6 +1,6 @@
 {
   "name": "@lc-trading-services/trading-data-client",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Yahoo Finance-based trading data provider implementation for fetching asset data including Forex, stocks, and other financial instruments",
   "author": "Life Cockpit",
   "license": "MIT",
