@@ -175,6 +175,260 @@ describe('MarketDataClient', () => {
       }
     });
 
+    it('should support 4h interval by fetching 1h data and aggregating', async () => {
+      // Create mock 1-hour data spanning 8 hours (should create 2 4-hour candles)
+      const mockChartData = {
+        quotes: [
+          // First 4-hour candle (hours 0-3)
+          {
+            date: new Date('2024-01-01T00:00:00Z'),
+            open: 100,
+            high: 105,
+            low: 99,
+            close: 102,
+            volume: 1000,
+            adjclose: 102,
+          },
+          {
+            date: new Date('2024-01-01T01:00:00Z'),
+            open: 102,
+            high: 106,
+            low: 101,
+            close: 104,
+            volume: 1500,
+            adjclose: 104,
+          },
+          {
+            date: new Date('2024-01-01T02:00:00Z'),
+            open: 104,
+            high: 107,
+            low: 103,
+            close: 105,
+            volume: 2000,
+            adjclose: 105,
+          },
+          {
+            date: new Date('2024-01-01T03:00:00Z'),
+            open: 105,
+            high: 108,
+            low: 104,
+            close: 106,
+            volume: 1200,
+            adjclose: 106,
+          },
+          // Second 4-hour candle (hours 4-7)
+          {
+            date: new Date('2024-01-01T04:00:00Z'),
+            open: 106,
+            high: 110,
+            low: 105,
+            close: 108,
+            volume: 1800,
+            adjclose: 108,
+          },
+          {
+            date: new Date('2024-01-01T05:00:00Z'),
+            open: 108,
+            high: 111,
+            low: 107,
+            close: 109,
+            volume: 1600,
+            adjclose: 109,
+          },
+          {
+            date: new Date('2024-01-01T06:00:00Z'),
+            open: 109,
+            high: 112,
+            low: 108,
+            close: 110,
+            volume: 1400,
+            adjclose: 110,
+          },
+          {
+            date: new Date('2024-01-01T07:00:00Z'),
+            open: 110,
+            high: 113,
+            low: 109,
+            close: 111,
+            volume: 1300,
+            adjclose: 111,
+          },
+        ],
+      };
+
+      mockDataSource.chart.mockResolvedValue(mockChartData);
+
+      const result = await client.getHistoricalData({
+        symbol: 'AAPL',
+        startDate: new Date('2024-01-01'),
+        interval: '4h',
+      });
+
+      // Should fetch 1h data
+      expect(mockDataSource.chart).toHaveBeenCalledWith(
+        'AAPL',
+        expect.objectContaining({
+          interval: '1h',
+        })
+      );
+
+      // Should return 2 4-hour candles
+      expect(result).toHaveLength(2);
+
+      // First 4-hour candle should aggregate hours 0-3
+      expect(result[0]).toMatchObject({
+        open: 100, // Open of first hour
+        high: 108, // Max high across all 4 hours
+        low: 99,   // Min low across all 4 hours
+        close: 106, // Close of last hour
+        volume: 5700, // Sum of volumes (1000 + 1500 + 2000 + 1200)
+        adjClose: 106, // Last adjClose value
+      });
+
+      // Second 4-hour candle should aggregate hours 4-7
+      expect(result[1]).toMatchObject({
+        open: 106, // Open of first hour
+        high: 113, // Max high across all 4 hours
+        low: 105,  // Min low across all 4 hours
+        close: 111, // Close of last hour
+        volume: 6100, // Sum of volumes (1800 + 1600 + 1400 + 1300)
+        adjClose: 111, // Last adjClose value
+      });
+    });
+
+    it('should handle 4h interval with incomplete 4-hour periods', async () => {
+      // Create mock 1-hour data with only 3 hours (incomplete 4-hour period)
+      const mockChartData = {
+        quotes: [
+          {
+            date: new Date('2024-01-01T00:00:00Z'),
+            open: 100,
+            high: 105,
+            low: 99,
+            close: 102,
+            volume: 1000,
+            adjclose: 102,
+          },
+          {
+            date: new Date('2024-01-01T01:00:00Z'),
+            open: 102,
+            high: 106,
+            low: 101,
+            close: 104,
+            volume: 1500,
+            adjclose: 104,
+          },
+          {
+            date: new Date('2024-01-01T02:00:00Z'),
+            open: 104,
+            high: 107,
+            low: 103,
+            close: 105,
+            volume: 2000,
+            adjclose: 105,
+          },
+        ],
+      };
+
+      mockDataSource.chart.mockResolvedValue(mockChartData);
+
+      const result = await client.getHistoricalData({
+        symbol: 'AAPL',
+        startDate: new Date('2024-01-01'),
+        interval: '4h',
+      });
+
+      // Should return 1 incomplete 4-hour candle
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        open: 100,
+        high: 107,
+        low: 99,
+        close: 105,
+        volume: 4500,
+      });
+    });
+
+    it('should handle 4h interval across different 4-hour periods', async () => {
+      // Test data that spans different 4-hour periods (0-3, 4-7, 8-11, 12-15, 16-19, 20-23)
+      const mockChartData = {
+        quotes: [
+          {
+            date: new Date('2024-01-01T02:00:00Z'),
+            open: 100,
+            high: 105,
+            low: 99,
+            close: 102,
+            volume: 1000,
+            adjclose: 102,
+          },
+          {
+            date: new Date('2024-01-01T03:00:00Z'),
+            open: 102,
+            high: 106,
+            low: 101,
+            close: 104,
+            volume: 1500,
+            adjclose: 104,
+          },
+          {
+            date: new Date('2024-01-01T04:00:00Z'),
+            open: 104,
+            high: 107,
+            low: 103,
+            close: 105,
+            volume: 2000,
+            adjclose: 105,
+          },
+          {
+            date: new Date('2024-01-01T08:00:00Z'),
+            open: 105,
+            high: 110,
+            low: 104,
+            close: 108,
+            volume: 1800,
+            adjclose: 108,
+          },
+        ],
+      };
+
+      mockDataSource.chart.mockResolvedValue(mockChartData);
+
+      const result = await client.getHistoricalData({
+        symbol: 'AAPL',
+        startDate: new Date('2024-01-01'),
+        interval: '4h',
+      });
+
+      // Should return 3 candles:
+      // - One for hours 0-3 (with data at hours 2 and 3)
+      // - One for hours 4-7 (with data only at hour 4)
+      // - One for hours 8-11 (with data only at hour 8)
+      expect(result).toHaveLength(3);
+      
+      // First candle (hours 0-3)
+      expect(result[0]).toMatchObject({
+        open: 100,
+        close: 104,
+        volume: 2500,
+      });
+      
+      // Second candle (hours 4-7)
+      expect(result[1]).toMatchObject({
+        open: 104,
+        close: 105,
+        volume: 2000,
+      });
+      
+      // Third candle (hours 8-11)
+      expect(result[2]).toMatchObject({
+        open: 105,
+        close: 108,
+        volume: 1800,
+      });
+    });
+
+
     it('should normalize simple forex format (EURUSD) for historical data', async () => {
       mockDataSource.chart.mockResolvedValue({ quotes: [] });
 

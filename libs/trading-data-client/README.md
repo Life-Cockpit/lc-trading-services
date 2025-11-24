@@ -48,7 +48,7 @@ This library uses a modular architecture with interface-based design for maintai
 ## Features
 
 - ✅ Fetch historical OHLCV (Open, High, Low, Close, Volume) data
-- ✅ Support for multiple time intervals (1m, 2m, 5m, 15m, 30m, 1h, 1d, 1wk, 1mo)
+- ✅ Support for multiple time intervals (1m, 2m, 5m, 15m, 30m, 1h, 4h, 1d, 1wk, 1mo)
 - ✅ Get real-time quote data
 - ✅ Fetch news articles for symbols and search queries
 - ✅ Support for Forex pairs with user-friendly formats (e.g., `EURUSD`, `EUR/USD`)
@@ -162,7 +162,9 @@ const newsClient = new NewsClient(adapter);
 const news = await newsClient.getNews({ query: 'AAPL', count: 5 });
 ```
 
-**Supported Intervals:** `1m`, `2m`, `5m`, `15m`, `30m`, `1h`, `1d`, `1wk`, `1mo`
+**Supported Intervals:** `1m`, `2m`, `5m`, `15m`, `30m`, `1h`, `4h`, `1d`, `1wk`, `1mo`
+
+**Note:** The `4h` (4-hour) interval is implemented by fetching 1-hour data and aggregating it into 4-hour candles, as Yahoo Finance does not natively support this interval.
 
 For more detailed examples, see the [examples/trading-data-client](../../examples/trading-data-client/) directory in the repository root.
 

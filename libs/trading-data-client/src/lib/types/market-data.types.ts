@@ -8,6 +8,7 @@ export type TimeInterval =
   | '15m'
   | '30m'
   | '1h'
+  | '4h'
   | '1d'
   | '1wk'
   | '1mo';
