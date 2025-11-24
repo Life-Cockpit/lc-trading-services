@@ -78,29 +78,35 @@ export class PivotPointsService {
 
   /**
    * Calculate days needed to fetch based on interval
+   * Pivot points only need previous period data, but we add safety margin
+   * for weekends, holidays, and incomplete periods
    */
   private calculateDaysNeeded(interval: TimeInterval): number {
+    // Safety multiplier to account for weekends/holidays/market closures
+    const safetyMultiplier = 3;
+    
     switch (interval) {
       case '1m':
       case '2m':
       case '5m':
       case '15m':
       case '30m':
-        // For minute intervals, we only need a few days
-        return 7;
+        // For minute intervals, need 1-2 days to ensure 2 complete periods
+        return 7; // Safe margin for intraday data
       case '1h':
-        // Need at least 2 hours of data
-        return 5;
+        // Need 2 periods (2 hours). With ~6.5 trading hours/day, use 1 day * safety
+        return Math.ceil((2 / 6.5) * safetyMultiplier);
       case '1d':
-        // Need at least 2 days of data
-        return 7;
+        // Need 2 periods (2 days) plus safety margin
+        return 2 * safetyMultiplier;
       case '1wk':
-        // Need at least 2 weeks of data
-        return 21;
+        // Need 2 periods (2 weeks = 14 days) plus safety margin
+        return 14 * safetyMultiplier;
       case '1mo':
-        // Need at least 2 months of data
-        return 70;
+        // Need 2 periods (2 months = ~60 days) plus safety margin
+        return 60 * safetyMultiplier;
       default:
+        // Default to week of data with safety margin
         return 7;
     }
   }
