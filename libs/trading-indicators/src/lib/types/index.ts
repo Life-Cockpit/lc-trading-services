@@ -177,3 +177,35 @@ export interface MACDResult {
   /** Calculation timestamp */
   timestamp: Date;
 }
+
+/**
+ * Pivot Points result with support and resistance levels
+ */
+export interface PivotPointsResult {
+  /** Symbol analyzed */
+  symbol: string;
+  /** Time interval used */
+  interval: TimeInterval;
+  /** Pivot Point (PP) - central level */
+  pivotPoint: number;
+  /** First resistance level */
+  r1: number;
+  /** Second resistance level */
+  r2: number;
+  /** Third resistance level */
+  r3: number;
+  /** First support level */
+  s1: number;
+  /** Second support level */
+  s2: number;
+  /** Third support level */
+  s3: number;
+  /** High price from previous period */
+  previousHigh: number;
+  /** Low price from previous period */
+  previousLow: number;
+  /** Close price from previous period */
+  previousClose: number;
+  /** Calculation timestamp */
+  timestamp: Date;
+}

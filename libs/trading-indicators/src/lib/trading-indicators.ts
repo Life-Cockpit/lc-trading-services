@@ -7,6 +7,7 @@ import { SupportResistanceService } from './services/support-resistance-service.
 import { TrendlineService } from './services/trendline-service.js';
 import { RSIService } from './services/rsi-service.js';
 import { MACDService } from './services/macd-service.js';
+import { PivotPointsService } from './services/pivot-points-service.js';
 
 /**
  * Main service class that provides access to all trading indicators
@@ -20,6 +21,7 @@ export class TradingIndicators {
   public readonly trendline: TrendlineService;
   public readonly rsi: RSIService;
   public readonly macd: MACDService;
+  public readonly pivotPoints: PivotPointsService;
 
   constructor(dataClient?: TradingDataClient) {
     const client = dataClient || new TradingDataClient();
@@ -32,5 +34,6 @@ export class TradingIndicators {
     this.trendline = new TrendlineService(client);
     this.rsi = new RSIService(client);
     this.macd = new MACDService(client, this.ema);
+    this.pivotPoints = new PivotPointsService(client);
   }
 }
