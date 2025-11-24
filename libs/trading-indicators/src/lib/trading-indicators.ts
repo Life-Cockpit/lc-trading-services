@@ -5,6 +5,7 @@ import { AllTimeHighLowService } from './services/all-time-high-low-service.js';
 import { Week52HighLowService } from './services/week-52-high-low-service.js';
 import { SupportResistanceService } from './services/support-resistance-service.js';
 import { TrendlineService } from './services/trendline-service.js';
+import { RSIService } from './services/rsi-service.js';
 
 /**
  * Main service class that provides access to all trading indicators
@@ -16,6 +17,7 @@ export class TradingIndicators {
   public readonly week52HighLow: Week52HighLowService;
   public readonly supportResistance: SupportResistanceService;
   public readonly trendline: TrendlineService;
+  public readonly rsi: RSIService;
 
   constructor(dataClient?: TradingDataClient) {
     const client = dataClient || new TradingDataClient();
@@ -26,5 +28,6 @@ export class TradingIndicators {
     this.week52HighLow = new Week52HighLowService(client);
     this.supportResistance = new SupportResistanceService(client);
     this.trendline = new TrendlineService(client);
+    this.rsi = new RSIService(client);
   }
 }
