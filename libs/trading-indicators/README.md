@@ -1,6 +1,6 @@
 # trading-indicators
 
-A comprehensive trading indicators library providing technical analysis tools including support/resistance zones, trendlines, ATR (Average True Range), EMA (Exponential Moving Average), RSI (Relative Strength Index), and high/low calculations.
+A comprehensive trading indicators library providing technical analysis tools including support/resistance zones, trendlines, ATR (Average True Range), EMA (Exponential Moving Average), RSI (Relative Strength Index), MACD (Moving Average Convergence Divergence), and high/low calculations.
 
 ## Installation
 
@@ -27,6 +27,7 @@ This package depends on:
 - `ATRService` - Average True Range calculations
 - `EMAService` - Exponential Moving Average calculations
 - `RSIService` - Relative Strength Index calculations
+- `MACDService` - Moving Average Convergence Divergence calculations
 - `AllTimeHighLowService` - All-time high and low calculations
 - `Week52HighLowService` - 52-week high and low calculations
 - `SupportResistanceService` - Support and resistance zone identification
@@ -36,6 +37,7 @@ This package depends on:
 - `ATRResult` - ATR calculation result
 - `EMAResult` - EMA calculation result
 - `RSIResult` - RSI calculation result
+- `MACDResult` - MACD calculation result
 - `AllTimeHighLowResult` - All-time high/low result
 - `WeekHighLowResult` - 52-week high/low result
 - `SupportResistanceResult` - Support/resistance zones result
@@ -49,12 +51,13 @@ This package depends on:
 - ✅ **ATR (Average True Range)** - Measure market volatility for 1d and 1h intervals
 - ✅ **EMA (Exponential Moving Average)** - Calculate EMA 9, 20, 50, and 200
 - ✅ **RSI (Relative Strength Index)** - Identify overbought and oversold conditions
+- ✅ **MACD (Moving Average Convergence Divergence)** - Trend and momentum indicator
 - ✅ **Support and Resistance Zones** - Identify key price levels with frequency tracking
 - ✅ **Trendlines** - Calculate support and resistance trendlines with exactly 2 hits
 - ✅ **All-Time High/Low** - Find historical price extremes
 - ✅ **52-Week High/Low** - Track yearly price ranges
 - ✅ **Type-safe** - Full TypeScript support
-- ✅ **Comprehensive Testing** - 62 test cases covering all services
+- ✅ **Comprehensive Testing** - 76 test cases covering all services
 - ✅ **Flexible API** - Use the main class or individual services
 
 ## Quick Start Guide
@@ -98,6 +101,12 @@ trendlines.supportTrendlines.forEach(trendline => {
 const rsi = await indicators.rsi.calculateRSI('AAPL');
 console.log(`RSI: ${rsi.rsi}`);
 console.log(`Signal: ${rsi.signal}`); // 'overbought', 'oversold', or 'neutral'
+
+// Calculate MACD
+const macd = await indicators.macd.calculateMACD('AAPL');
+console.log(`MACD Line: ${macd.macd}`);
+console.log(`Signal Line: ${macd.signal}`);
+console.log(`Histogram: ${macd.histogram}`);
 ```
 
 ## Supported Symbols
@@ -137,6 +146,7 @@ constructor(dataClient?: TradingDataClient)
 - `atr: ATRService` - ATR indicator service
 - `ema: EMAService` - EMA indicator service
 - `rsi: RSIService` - RSI indicator service
+- `macd: MACDService` - MACD indicator service
 - `allTimeHighLow: AllTimeHighLowService` - All-time high/low service
 - `week52HighLow: Week52HighLowService` - 52-week high/low service
 - `supportResistance: SupportResistanceService` - Support/resistance zones service
@@ -256,6 +266,64 @@ console.log(`Signal: ${rsi.signal}`); // 'overbought', 'oversold', or 'neutral'
 // With custom period and interval
 const hourlyRSI = await indicators.rsi.calculateRSI('BTC-USD', 21, '1h');
 console.log(`Hourly RSI: ${hourlyRSI.rsi}`);
+```
+
+### MACDService
+
+Moving Average Convergence Divergence indicator service for measuring trend strength and momentum.
+
+#### calculateMACD
+
+```typescript
+async calculateMACD(
+  symbol: string,
+  fastPeriod?: number,
+  slowPeriod?: number,
+  signalPeriod?: number,
+  interval?: TimeInterval
+): Promise<MACDResult>
+```
+
+**Parameters:**
+- `symbol` - Asset symbol (e.g., 'EURUSD', 'AAPL')
+- `fastPeriod` (optional) - Fast EMA period (default: 12)
+- `slowPeriod` (optional) - Slow EMA period (default: 26)
+- `signalPeriod` (optional) - Signal line EMA period (default: 9)
+- `interval` (optional) - Time interval (default: '1d')
+
+**Returns:** Promise resolving to MACDResult
+
+**MACD Components:**
+- **MACD Line:** Fast EMA - Slow EMA
+- **Signal Line:** EMA of MACD Line (using signal period)
+- **Histogram:** MACD Line - Signal Line
+
+**Signal Interpretation:**
+- MACD > Signal: Bullish momentum (potential buy signal)
+- MACD < Signal: Bearish momentum (potential sell signal)
+- MACD > 0: Price above long-term average (bullish)
+- MACD < 0: Price below long-term average (bearish)
+- Histogram > 0 and growing: Strengthening bullish momentum
+- Histogram < 0 and declining: Strengthening bearish momentum
+
+**Example:**
+```typescript
+// Calculate MACD with default parameters (12, 26, 9)
+const macd = await indicators.macd.calculateMACD('AAPL');
+console.log(`MACD Line: ${macd.macd}`);
+console.log(`Signal Line: ${macd.signal}`);
+console.log(`Histogram: ${macd.histogram}`);
+
+// Generate trading signal
+if (macd.macd > macd.signal) {
+  console.log('Bullish signal - MACD crossed above signal line');
+} else {
+  console.log('Bearish signal - MACD crossed below signal line');
+}
+
+// With custom parameters for faster signals (8, 17, 9)
+const fastMACD = await indicators.macd.calculateMACD('BTC-USD', 8, 17, 9, '1h');
+console.log(`Fast MACD: ${fastMACD.macd}`);
 ```
 
 ### AllTimeHighLowService
