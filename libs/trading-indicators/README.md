@@ -1,6 +1,6 @@
 # trading-indicators
 
-A comprehensive trading indicators library providing technical analysis tools including support/resistance zones, trendlines, ATR (Average True Range), EMA (Exponential Moving Average), RSI (Relative Strength Index), MACD (Moving Average Convergence Divergence), and high/low calculations.
+A comprehensive trading indicators library providing technical analysis tools including support/resistance zones, trendlines, ATR (Average True Range), EMA (Exponential Moving Average), RSI (Relative Strength Index), MACD (Moving Average Convergence Divergence), Pivot Points, and high/low calculations.
 
 ## Installation
 
@@ -28,6 +28,7 @@ This package depends on:
 - `EMAService` - Exponential Moving Average calculations
 - `RSIService` - Relative Strength Index calculations
 - `MACDService` - Moving Average Convergence Divergence calculations
+- `PivotPointsService` - Pivot Points support and resistance levels
 - `AllTimeHighLowService` - All-time high and low calculations
 - `Week52HighLowService` - 52-week high and low calculations
 - `SupportResistanceService` - Support and resistance zone identification
@@ -38,6 +39,7 @@ This package depends on:
 - `EMAResult` - EMA calculation result
 - `RSIResult` - RSI calculation result
 - `MACDResult` - MACD calculation result
+- `PivotPointsResult` - Pivot Points calculation result
 - `AllTimeHighLowResult` - All-time high/low result
 - `WeekHighLowResult` - 52-week high/low result
 - `SupportResistanceResult` - Support/resistance zones result
@@ -52,12 +54,13 @@ This package depends on:
 - ✅ **EMA (Exponential Moving Average)** - Calculate EMA 9, 20, 50, and 200
 - ✅ **RSI (Relative Strength Index)** - Identify overbought and oversold conditions
 - ✅ **MACD (Moving Average Convergence Divergence)** - Trend and momentum indicator
+- ✅ **Pivot Points** - Calculate standard pivot points with 3 support and 3 resistance levels
 - ✅ **Support and Resistance Zones** - Identify key price levels with frequency tracking
 - ✅ **Trendlines** - Calculate support and resistance trendlines with exactly 2 hits
 - ✅ **All-Time High/Low** - Find historical price extremes
 - ✅ **52-Week High/Low** - Track yearly price ranges
 - ✅ **Type-safe** - Full TypeScript support
-- ✅ **Comprehensive Testing** - 76 test cases covering all services
+- ✅ **Comprehensive Testing** - 84 test cases covering all services
 - ✅ **Flexible API** - Use the main class or individual services
 
 ## Quick Start Guide
@@ -107,6 +110,12 @@ const macd = await indicators.macd.calculateMACD('AAPL');
 console.log(`MACD Line: ${macd.macd}`);
 console.log(`Signal Line: ${macd.signal}`);
 console.log(`Histogram: ${macd.histogram}`);
+
+// Calculate Pivot Points
+const pivotPoints = await indicators.pivotPoints.calculatePivotPoints('AAPL');
+console.log(`Pivot Point: ${pivotPoints.pivotPoint}`);
+console.log(`Resistance Levels: R1=${pivotPoints.r1}, R2=${pivotPoints.r2}, R3=${pivotPoints.r3}`);
+console.log(`Support Levels: S1=${pivotPoints.s1}, S2=${pivotPoints.s2}, S3=${pivotPoints.s3}`);
 ```
 
 ## Supported Symbols
@@ -147,6 +156,7 @@ constructor(dataClient?: TradingDataClient)
 - `ema: EMAService` - EMA indicator service
 - `rsi: RSIService` - RSI indicator service
 - `macd: MACDService` - MACD indicator service
+- `pivotPoints: PivotPointsService` - Pivot Points indicator service
 - `allTimeHighLow: AllTimeHighLowService` - All-time high/low service
 - `week52HighLow: Week52HighLowService` - 52-week high/low service
 - `supportResistance: SupportResistanceService` - Support/resistance zones service
@@ -324,6 +334,65 @@ if (macd.macd > macd.signal) {
 // With custom parameters for faster signals (8, 17, 9)
 const fastMACD = await indicators.macd.calculateMACD('BTC-USD', 8, 17, 9, '1h');
 console.log(`Fast MACD: ${fastMACD.macd}`);
+```
+
+### PivotPointsService
+
+Service for calculating Standard Pivot Points with support and resistance levels.
+
+#### calculatePivotPoints
+
+```typescript
+async calculatePivotPoints(
+  symbol: string,
+  interval?: TimeInterval
+): Promise<PivotPointsResult>
+```
+
+**Parameters:**
+- `symbol` - Asset symbol (e.g., 'EURUSD', 'AAPL')
+- `interval` (optional) - Time interval (default: '1d')
+
+**Returns:** Promise resolving to PivotPointsResult
+
+**Pivot Points Components:**
+- **Pivot Point (PP):** Central reference level calculated as (High + Low + Close) / 3
+- **Resistance Levels:**
+  - **R1:** First resistance = (2 × PP) - Low
+  - **R2:** Second resistance = PP + (High - Low)
+  - **R3:** Third resistance = High + 2 × (PP - Low)
+- **Support Levels:**
+  - **S1:** First support = (2 × PP) - High
+  - **S2:** Second support = PP - (High - Low)
+  - **S3:** Third support = Low - 2 × (High - PP)
+
+**How it works:**
+- Uses the previous period's high, low, and close prices to calculate levels
+- The pivot point serves as the primary support/resistance level
+- Additional support and resistance levels help identify potential price targets
+- Commonly used by traders to identify entry and exit points
+
+**Example:**
+```typescript
+// Calculate daily pivot points
+const pivotPoints = await indicators.pivotPoints.calculatePivotPoints('AAPL');
+console.log(`Pivot Point: ${pivotPoints.pivotPoint}`);
+console.log(`Resistance Levels: R1=${pivotPoints.r1}, R2=${pivotPoints.r2}, R3=${pivotPoints.r3}`);
+console.log(`Support Levels: S1=${pivotPoints.s1}, S2=${pivotPoints.s2}, S3=${pivotPoints.s3}`);
+console.log(`Previous Period: High=${pivotPoints.previousHigh}, Low=${pivotPoints.previousLow}, Close=${pivotPoints.previousClose}`);
+
+// Calculate hourly pivot points for forex
+const hourlyPivots = await indicators.pivotPoints.calculatePivotPoints('EURUSD', '1h');
+console.log(`Hourly Pivot Point: ${hourlyPivots.pivotPoint}`);
+
+// Trading strategy example
+if (currentPrice > pivotPoints.pivotPoint) {
+  console.log('Price above pivot - bullish bias');
+  console.log(`Resistance targets: ${pivotPoints.r1}, ${pivotPoints.r2}, ${pivotPoints.r3}`);
+} else {
+  console.log('Price below pivot - bearish bias');
+  console.log(`Support targets: ${pivotPoints.s1}, ${pivotPoints.s2}, ${pivotPoints.s3}`);
+}
 ```
 
 ### AllTimeHighLowService
