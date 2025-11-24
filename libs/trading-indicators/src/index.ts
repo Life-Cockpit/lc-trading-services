@@ -10,6 +10,7 @@ export { SupportResistanceService } from './lib/services/support-resistance-serv
 export { TrendlineService } from './lib/services/trendline-service.js';
 export { RSIService } from './lib/services/rsi-service.js';
 export { MACDService } from './lib/services/macd-service.js';
+export { PivotPointsService } from './lib/services/pivot-points-service.js';
 
 // Types
 export type {
@@ -24,5 +25,6 @@ export type {
   TrendlineResult,
   RSIResult,
   MACDResult,
+  PivotPointsResult,
 } from './lib/types/index.js';
 
