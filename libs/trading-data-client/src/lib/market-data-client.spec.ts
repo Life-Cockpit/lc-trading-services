@@ -284,6 +284,8 @@ describe('MarketDataClient', () => {
         volume: 5700, // Sum of volumes (1000 + 1500 + 2000 + 1200)
         adjClose: 106, // Last adjClose value
       });
+      // Date should be normalized to start of 4-hour period (00:00)
+      expect(result[0].date.toISOString()).toBe('2024-01-01T00:00:00.000Z');
 
       // Second 4-hour candle should aggregate hours 4-7
       expect(result[1]).toMatchObject({
@@ -294,6 +296,8 @@ describe('MarketDataClient', () => {
         volume: 6100, // Sum of volumes (1800 + 1600 + 1400 + 1300)
         adjClose: 111, // Last adjClose value
       });
+      // Date should be normalized to start of 4-hour period (04:00)
+      expect(result[1].date.toISOString()).toBe('2024-01-01T04:00:00.000Z');
     });
 
     it('should handle 4h interval with incomplete 4-hour periods', async () => {
