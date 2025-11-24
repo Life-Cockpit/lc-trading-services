@@ -17,7 +17,7 @@ The `trading-data-client` package is already configured with version 1.0.0 in it
 
 ### Dependencies
 The `trading-indicators` package is already configured to use version 1.0.0:
-- Dependency: `@lc-trading-services/trading-data-client": "^1.0.0"`
+- Dependency: `"@lc-trading-services/trading-data-client": "^1.0.0"`
 
 ### Next Steps to Release
 After this PR is merged to main, create and push the release tag:
