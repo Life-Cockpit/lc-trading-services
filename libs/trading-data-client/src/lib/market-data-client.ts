@@ -151,8 +151,12 @@ export class MarketDataClient implements IMarketDataProvider {
           fourHourCandles.push(currentCandle);
         }
         
+        // Create a date normalized to the start of the 4-hour period
+        const normalizedDate = new Date(hourData.date);
+        normalizedDate.setUTCHours(periodStartHour, 0, 0, 0);
+        
         currentCandle = {
-          date: hourData.date,
+          date: normalizedDate,
           open: hourData.open,
           high: hourData.high,
           low: hourData.low,
@@ -161,15 +165,15 @@ export class MarketDataClient implements IMarketDataProvider {
           adjClose: hourData.adjClose,
         };
         candleStartHour = periodStartHour;
-      } else if (currentCandle !== null) {
+      } else {
         // Update the current 4-hour candle
-        currentCandle.high = Math.max(currentCandle.high, hourData.high);
-        currentCandle.low = Math.min(currentCandle.low, hourData.low);
-        currentCandle.close = hourData.close;
-        currentCandle.volume += hourData.volume;
+        currentCandle!.high = Math.max(currentCandle!.high, hourData.high);
+        currentCandle!.low = Math.min(currentCandle!.low, hourData.low);
+        currentCandle!.close = hourData.close;
+        currentCandle!.volume += hourData.volume;
         // For adjClose, use the most recent value if available
         if (hourData.adjClose !== undefined) {
-          currentCandle.adjClose = hourData.adjClose;
+          currentCandle!.adjClose = hourData.adjClose;
         }
       }
     }
