@@ -8,6 +8,7 @@ import { SupportResistanceService } from './services/support-resistance-service.
 import { TrendlineService } from './services/trendline-service.js';
 import { RSIService } from './services/rsi-service.js';
 import { MACDService } from './services/macd-service.js';
+import { PivotPointsService } from './services/pivot-points-service.js';
 
 describe('TradingIndicators', () => {
   it('should create instance with default data client', () => {
@@ -22,6 +23,7 @@ describe('TradingIndicators', () => {
     expect(indicators.trendline).toBeInstanceOf(TrendlineService);
     expect(indicators.rsi).toBeInstanceOf(RSIService);
     expect(indicators.macd).toBeInstanceOf(MACDService);
+    expect(indicators.pivotPoints).toBeInstanceOf(PivotPointsService);
   });
 
   it('should create instance with custom data client', () => {
@@ -37,6 +39,7 @@ describe('TradingIndicators', () => {
     expect(indicators.trendline).toBeInstanceOf(TrendlineService);
     expect(indicators.rsi).toBeInstanceOf(RSIService);
     expect(indicators.macd).toBeInstanceOf(MACDService);
+    expect(indicators.pivotPoints).toBeInstanceOf(PivotPointsService);
   });
 
   it('should provide access to all indicator services', () => {
@@ -51,5 +54,6 @@ describe('TradingIndicators', () => {
     expect(typeof indicators.trendline.calculateTrendlines).toBe('function');
     expect(typeof indicators.rsi.calculateRSI).toBe('function');
     expect(typeof indicators.macd.calculateMACD).toBe('function');
+    expect(typeof indicators.pivotPoints.calculatePivotPoints).toBe('function');
   });
 });
