@@ -70,10 +70,12 @@ async function main() {
 
   console.log('\n---\n');
 
-  // Example 4: Using RSIService directly
-  console.log('Example 4: Using RSIService directly');
+  // Example 4: Using RSIService directly with TradingDataClient
+  console.log('Example 4: Using RSIService directly with TradingDataClient');
   try {
-    const rsiService = new RSIService(indicators['atr']['dataClient']);
+    const { TradingDataClient } = await import('@lc-trading-services/trading-data-client');
+    const dataClient = new TradingDataClient();
+    const rsiService = new RSIService(dataClient);
     const msftRSI = await rsiService.calculateRSI('MSFT', 14);
     console.log('Microsoft (MSFT) RSI:');
     console.log(`  RSI: ${msftRSI.rsi}`);
