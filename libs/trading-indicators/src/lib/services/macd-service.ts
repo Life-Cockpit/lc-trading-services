@@ -117,7 +117,7 @@ export class MACDService {
    * Calculate days needed to fetch based on interval
    */
   private calculateDaysNeeded(interval: TimeInterval, period: number): number {
-    // Use period * 3 for better accuracy and to account for weekends/holidays
+    // Use period * 3 for safety margin to account for weekends/holidays
     const multiplier = 3;
     
     switch (interval) {
