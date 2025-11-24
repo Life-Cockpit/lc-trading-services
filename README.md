@@ -10,7 +10,7 @@ This repository contains reusable TypeScript libraries designed to facilitate in
 - 🔌 Provider-agnostic trading data interfaces
 - 📊 Yahoo Finance integration for real-time and historical data
 - 💱 Support for Forex, stocks, ETFs, and cryptocurrencies
-- ⏱️ Multiple time intervals (1m to 1mo)
+- ⏱️ Multiple time intervals (1m, 2m, 5m, 15m, 30m, 1h, 4h, 1d, 1wk, 1mo)
 
 ## Project Structure
 
