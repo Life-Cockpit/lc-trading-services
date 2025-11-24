@@ -6,6 +6,7 @@ import { Week52HighLowService } from './services/week-52-high-low-service.js';
 import { SupportResistanceService } from './services/support-resistance-service.js';
 import { TrendlineService } from './services/trendline-service.js';
 import { RSIService } from './services/rsi-service.js';
+import { MACDService } from './services/macd-service.js';
 
 /**
  * Main service class that provides access to all trading indicators
@@ -18,6 +19,7 @@ export class TradingIndicators {
   public readonly supportResistance: SupportResistanceService;
   public readonly trendline: TrendlineService;
   public readonly rsi: RSIService;
+  public readonly macd: MACDService;
 
   constructor(dataClient?: TradingDataClient) {
     const client = dataClient || new TradingDataClient();
@@ -29,5 +31,6 @@ export class TradingIndicators {
     this.supportResistance = new SupportResistanceService(client);
     this.trendline = new TrendlineService(client);
     this.rsi = new RSIService(client);
+    this.macd = new MACDService(client);
   }
 }

@@ -155,3 +155,25 @@ export interface RSIResult {
   /** Calculation timestamp */
   timestamp: Date;
 }
+
+/**
+ * MACD (Moving Average Convergence Divergence) result
+ */
+export interface MACDResult {
+  /** Symbol analyzed */
+  symbol: string;
+  /** Fast EMA period (default: 12) */
+  fastPeriod: number;
+  /** Slow EMA period (default: 26) */
+  slowPeriod: number;
+  /** Signal period (default: 9) */
+  signalPeriod: number;
+  /** MACD line value (fast EMA - slow EMA) */
+  macd: number;
+  /** Signal line value (EMA of MACD) */
+  signal: number;
+  /** MACD histogram (MACD - Signal) */
+  histogram: number;
+  /** Calculation timestamp */
+  timestamp: Date;
+}
