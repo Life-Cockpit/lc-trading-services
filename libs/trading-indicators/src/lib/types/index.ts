@@ -139,3 +139,19 @@ export interface TrendlineResult {
   /** Calculation timestamp */
   timestamp: Date;
 }
+
+/**
+ * RSI (Relative Strength Index) result
+ */
+export interface RSIResult {
+  /** Symbol analyzed */
+  symbol: string;
+  /** RSI period (e.g., 14) */
+  period: number;
+  /** Current RSI value (0-100) */
+  rsi: number;
+  /** RSI signal interpretation */
+  signal: 'overbought' | 'oversold' | 'neutral';
+  /** Calculation timestamp */
+  timestamp: Date;
+}

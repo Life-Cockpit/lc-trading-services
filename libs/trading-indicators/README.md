@@ -1,6 +1,6 @@
 # trading-indicators
 
-A comprehensive trading indicators library providing technical analysis tools including support/resistance zones, trendlines, ATR (Average True Range), EMA (Exponential Moving Average), and high/low calculations.
+A comprehensive trading indicators library providing technical analysis tools including support/resistance zones, trendlines, ATR (Average True Range), EMA (Exponential Moving Average), RSI (Relative Strength Index), and high/low calculations.
 
 ## Installation
 
@@ -26,6 +26,7 @@ This package depends on:
 ### Services
 - `ATRService` - Average True Range calculations
 - `EMAService` - Exponential Moving Average calculations
+- `RSIService` - Relative Strength Index calculations
 - `AllTimeHighLowService` - All-time high and low calculations
 - `Week52HighLowService` - 52-week high and low calculations
 - `SupportResistanceService` - Support and resistance zone identification
@@ -34,6 +35,7 @@ This package depends on:
 ### Types
 - `ATRResult` - ATR calculation result
 - `EMAResult` - EMA calculation result
+- `RSIResult` - RSI calculation result
 - `AllTimeHighLowResult` - All-time high/low result
 - `WeekHighLowResult` - 52-week high/low result
 - `SupportResistanceResult` - Support/resistance zones result
@@ -46,12 +48,13 @@ This package depends on:
 
 - ✅ **ATR (Average True Range)** - Measure market volatility for 1d and 1h intervals
 - ✅ **EMA (Exponential Moving Average)** - Calculate EMA 9, 20, 50, and 200
+- ✅ **RSI (Relative Strength Index)** - Identify overbought and oversold conditions
 - ✅ **Support and Resistance Zones** - Identify key price levels with frequency tracking
 - ✅ **Trendlines** - Calculate support and resistance trendlines with exactly 2 hits
 - ✅ **All-Time High/Low** - Find historical price extremes
 - ✅ **52-Week High/Low** - Track yearly price ranges
 - ✅ **Type-safe** - Full TypeScript support
-- ✅ **Comprehensive Testing** - 52 test cases covering all services
+- ✅ **Comprehensive Testing** - 62 test cases covering all services
 - ✅ **Flexible API** - Use the main class or individual services
 
 ## Quick Start Guide
@@ -90,6 +93,11 @@ console.log(`Found ${trendlines.resistanceTrendlines.length} resistance trendlin
 trendlines.supportTrendlines.forEach(trendline => {
   console.log(`Support Trendline: ${trendline.point1.price} -> ${trendline.point2.price}, Slope=${trendline.slope}, Strength=${trendline.strength}`);
 });
+
+// Calculate RSI
+const rsi = await indicators.rsi.calculateRSI('AAPL');
+console.log(`RSI: ${rsi.rsi}`);
+console.log(`Signal: ${rsi.signal}`); // 'overbought', 'oversold', or 'neutral'
 ```
 
 ## Supported Symbols
@@ -128,6 +136,7 @@ constructor(dataClient?: TradingDataClient)
 **Properties:**
 - `atr: ATRService` - ATR indicator service
 - `ema: EMAService` - EMA indicator service
+- `rsi: RSIService` - RSI indicator service
 - `allTimeHighLow: AllTimeHighLowService` - All-time high/low service
 - `week52HighLow: Week52HighLowService` - 52-week high/low service
 - `supportResistance: SupportResistanceService` - Support/resistance zones service
@@ -210,6 +219,43 @@ const emas = await indicators.ema.calculateMultipleEMAs('AAPL', [9, 20, 50, 200]
 emas.forEach(result => {
   console.log(`EMA ${result.period}: ${result.ema}`);
 });
+```
+
+### RSIService
+
+Relative Strength Index indicator service for measuring momentum and identifying overbought/oversold conditions.
+
+#### calculateRSI
+
+```typescript
+async calculateRSI(
+  symbol: string,
+  period?: number,
+  interval?: TimeInterval
+): Promise<RSIResult>
+```
+
+**Parameters:**
+- `symbol` - Asset symbol (e.g., 'EURUSD', 'AAPL')
+- `period` (optional) - RSI period (default: 14)
+- `interval` (optional) - Time interval (default: '1d')
+
+**Returns:** Promise resolving to RSIResult
+
+**RSI Values:**
+- RSI >= 70: Overbought (potential sell signal)
+- RSI <= 30: Oversold (potential buy signal)
+- 30 < RSI < 70: Neutral
+
+**Example:**
+```typescript
+const rsi = await indicators.rsi.calculateRSI('AAPL', 14);
+console.log(`RSI: ${rsi.rsi}`);
+console.log(`Signal: ${rsi.signal}`); // 'overbought', 'oversold', or 'neutral'
+
+// With custom period and interval
+const hourlyRSI = await indicators.rsi.calculateRSI('BTC-USD', 21, '1h');
+console.log(`Hourly RSI: ${hourlyRSI.rsi}`);
 ```
 
 ### AllTimeHighLowService
