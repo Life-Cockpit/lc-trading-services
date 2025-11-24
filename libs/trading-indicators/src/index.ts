@@ -9,6 +9,7 @@ export { Week52HighLowService } from './lib/services/week-52-high-low-service.js
 export { SupportResistanceService } from './lib/services/support-resistance-service.js';
 export { TrendlineService } from './lib/services/trendline-service.js';
 export { RSIService } from './lib/services/rsi-service.js';
+export { MACDService } from './lib/services/macd-service.js';
 
 // Types
 export type {
@@ -22,5 +23,6 @@ export type {
   TrendlinePoint,
   TrendlineResult,
   RSIResult,
+  MACDResult,
 } from './lib/types/index.js';
 

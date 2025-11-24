@@ -7,6 +7,7 @@ import { Week52HighLowService } from './services/week-52-high-low-service.js';
 import { SupportResistanceService } from './services/support-resistance-service.js';
 import { TrendlineService } from './services/trendline-service.js';
 import { RSIService } from './services/rsi-service.js';
+import { MACDService } from './services/macd-service.js';
 
 describe('TradingIndicators', () => {
   it('should create instance with default data client', () => {
@@ -20,6 +21,7 @@ describe('TradingIndicators', () => {
     expect(indicators.supportResistance).toBeInstanceOf(SupportResistanceService);
     expect(indicators.trendline).toBeInstanceOf(TrendlineService);
     expect(indicators.rsi).toBeInstanceOf(RSIService);
+    expect(indicators.macd).toBeInstanceOf(MACDService);
   });
 
   it('should create instance with custom data client', () => {
@@ -34,6 +36,7 @@ describe('TradingIndicators', () => {
     expect(indicators.supportResistance).toBeInstanceOf(SupportResistanceService);
     expect(indicators.trendline).toBeInstanceOf(TrendlineService);
     expect(indicators.rsi).toBeInstanceOf(RSIService);
+    expect(indicators.macd).toBeInstanceOf(MACDService);
   });
 
   it('should provide access to all indicator services', () => {
@@ -47,5 +50,6 @@ describe('TradingIndicators', () => {
     expect(typeof indicators.supportResistance.calculateSupportResistance).toBe('function');
     expect(typeof indicators.trendline.calculateTrendlines).toBe('function');
     expect(typeof indicators.rsi.calculateRSI).toBe('function');
+    expect(typeof indicators.macd.calculateMACD).toBe('function');
   });
 });
