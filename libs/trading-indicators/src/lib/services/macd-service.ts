@@ -1,12 +1,20 @@
 import type { TradingDataClient, TimeInterval } from '@lc-trading-services/trading-data-client';
 import type { MACDResult } from '../types/index.js';
+import { EMAService } from './ema-service.js';
 
 /**
  * Service for calculating MACD (Moving Average Convergence Divergence) indicator
  * MACD is a trend-following momentum indicator that shows the relationship between two EMAs
  */
 export class MACDService {
-  constructor(private readonly dataClient: TradingDataClient) {}
+  private readonly emaService: EMAService;
+
+  constructor(
+    private readonly dataClient: TradingDataClient,
+    emaService?: EMAService
+  ) {
+    this.emaService = emaService || new EMAService(dataClient);
+  }
 
   /**
    * Calculate MACD for a symbol
@@ -52,9 +60,9 @@ export class MACDService {
     // Extract closing prices
     const prices = historicalData.map((data) => data.close);
 
-    // Calculate MACD components
-    const fastEMA = this.computeEMA(prices, fastPeriod);
-    const slowEMA = this.computeEMA(prices, slowPeriod);
+    // Calculate MACD components using EMAService
+    const fastEMA = this.emaService.computeEMA(prices, fastPeriod);
+    const slowEMA = this.emaService.computeEMA(prices, slowPeriod);
     const macdLine = fastEMA - slowEMA;
 
     // Calculate signal line (EMA of MACD values)
@@ -64,13 +72,13 @@ export class MACDService {
     // Start from slowPeriod because that's when we can first calculate MACD
     for (let i = slowPeriod; i <= prices.length; i++) {
       const priceSlice = prices.slice(0, i);
-      const fast = this.computeEMA(priceSlice, fastPeriod);
-      const slow = this.computeEMA(priceSlice, slowPeriod);
+      const fast = this.emaService.computeEMA(priceSlice, fastPeriod);
+      const slow = this.emaService.computeEMA(priceSlice, slowPeriod);
       macdValues.push(fast - slow);
     }
 
     // Calculate signal line as EMA of MACD values
-    const signalLine = this.computeEMA(macdValues, signalPeriod);
+    const signalLine = this.emaService.computeEMA(macdValues, signalPeriod);
     const histogram = macdLine - signalLine;
 
     return {
@@ -83,34 +91,6 @@ export class MACDService {
       histogram: Number(histogram.toFixed(6)),
       timestamp: new Date(),
     };
-  }
-
-  /**
-   * Compute EMA from price array
-   * @param prices - Array of prices
-   * @param period - EMA period
-   * @returns EMA value
-   */
-  private computeEMA(prices: number[], period: number): number {
-    if (prices.length < period) {
-      throw new Error(`Not enough prices for EMA calculation`);
-    }
-
-    // Calculate initial SMA (Simple Moving Average)
-    const initialSMA = prices.slice(0, period).reduce((sum, price) => sum + price, 0) / period;
-    
-    // Calculate multiplier: (2 / (period + 1))
-    const multiplier = 2 / (period + 1);
-    
-    // Start with SMA as the first EMA value
-    let ema = initialSMA;
-    
-    // Calculate EMA for remaining prices
-    for (let i = period; i < prices.length; i++) {
-      ema = (prices[i] - ema) * multiplier + ema;
-    }
-    
-    return ema;
   }
 
   /**

@@ -31,6 +31,6 @@ export class TradingIndicators {
     this.supportResistance = new SupportResistanceService(client);
     this.trendline = new TrendlineService(client);
     this.rsi = new RSIService(client);
-    this.macd = new MACDService(client);
+    this.macd = new MACDService(client, this.ema);
   }
 }

@@ -105,7 +105,7 @@ export class EMAService {
    * @param period - EMA period
    * @returns EMA value
    */
-  private computeEMA(prices: number[], period: number): number {
+  public computeEMA(prices: number[], period: number): number {
     if (prices.length < period) {
       throw new Error(`Not enough prices for EMA calculation`);
     }
